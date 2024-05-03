@@ -11,22 +11,19 @@ import UIKit
 
 extension UIAlertController {
     
-    public class func quickTip(message:String, navigation:UINavigationController?,title:String = "Tip",cancelButtonTitle:String = "OK") {
+    public class func quickTip(message: String, navigation: UINavigationController?, title: String = "Tip", cancelButtonTitle: String = "OK") {
         let alertView = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alertView.addAction(UIAlertAction(title: cancelButtonTitle, style: .cancel) { _ in
-            
-        })
-        
+        alertView.addAction(UIAlertAction(title: cancelButtonTitle, style: .cancel))
         navigation?.present(alertView, animated: true, completion: nil)
     }
     
-    public class func quickConfirm(message:String,
-                                   title:String,
-                                   destructive:Bool = false,
-                                   navigation:UINavigationController?,
-                                   cancelButtonTitle:String = "No",
-                                   confirmButtonTitle:String = "Yes",
-                                   clickedButtonAtIndex:@escaping ( _ buttonIndex: Int)->()) {
+    public class func quickConfirm(message: String,
+                                   title: String,
+                                   destructive: Bool = false,
+                                   navigation: UINavigationController?,
+                                   cancelButtonTitle: String = "No",
+                                   confirmButtonTitle: String = "Yes",
+                                   clickedButtonAtIndex: @escaping ( _ buttonIndex: Int) -> ()) {
         let alertView = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alertView.addAction(UIAlertAction(title: cancelButtonTitle, style: .cancel) { _ in
             clickedButtonAtIndex(0)

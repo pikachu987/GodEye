@@ -7,47 +7,43 @@ import Foundation
 import UIKit
 
 extension UIView {
-    
     @objc open func hook_setNeedsLayout() {
-        self.checkThread()
-        self.hook_setNeedsLayout()
+        checkThread()
+        hook_setNeedsLayout()
     }
     
     @objc open func hook_setNeedsDisplay(_ rect: CGRect) {
-        self.checkThread()
-        self.hook_setNeedsDisplay(rect)
+        checkThread()
+        hook_setNeedsDisplay(rect)
     }
-    
-    
-    
+
     func checkThread() {
         assert(Thread.isMainThread,"You changed UI element not on main thread")
     }
 }
 
 open class UIThreadEye: NSObject {
-
     open class func open() {
-        if self.isSwizzled == false {
-            self.isSwizzled = true
-            self.hook()
-        }else {
+        if isSwizzled == false {
+            isSwizzled = true
+            hook()
+        } else {
             print("[NetworkEye] already started or hook failure")
         }
     }
     
     open class func close() {
-        if self.isSwizzled == true {
-            self.isSwizzled = false
-            self.hook()
-        }else {
+        if isSwizzled == true {
+            isSwizzled = false
+            hook()
+        } else {
             print("[NetworkEye] already stoped or hook failure")
         }
     }
     
     public static var isWatching: Bool  {
         get {
-            return self.isSwizzled
+            isSwizzled
         }
     }
 
@@ -59,15 +55,12 @@ open class UIThreadEye: NSObject {
     }
     
     private static var isSwizzled: Bool {
-        set{
-            objc_setAssociatedObject(self, &key.isSwizzled, isSwizzled, .OBJC_ASSOCIATION_ASSIGN);
+        set {
+            objc_setAssociatedObject(self, &key.isSwizzled, isSwizzled, .OBJC_ASSOCIATION_ASSIGN)
         }
-        get{
-            let result = objc_getAssociatedObject(self, &key.isSwizzled) as? Bool
-            if result == nil {
-                return false
-            }
-            return result!
+        get {
+            guard let result = objc_getAssociatedObject(self, &key.isSwizzled) as? Bool else { return false }
+            return result
         }
     }
     

@@ -13,43 +13,40 @@ import Foundation
 class EyeProtocol: URLProtocol {
     
     class func open() {
-        URLProtocol.registerClass(self.classForCoder())
+        URLProtocol.registerClass(classForCoder())
     }
     
     class func close() {
-        URLProtocol.unregisterClass(self.classForCoder())
+        URLProtocol.unregisterClass(classForCoder())
     }
     
-    open class func add(delegate:NetworkEyeDelegate) {
+    public class func add(delegate:NetworkEyeDelegate) {
         // delete null week delegate
-        self.delegates = self.delegates.filter {
-            return $0.delegate != nil
-        }
-        
+        delegates = delegates.filter { $0.delegate != nil }
+
         // judge if contains the delegate from parameter
-        let contains = self.delegates.contains {
-            return $0.delegate?.hash == delegate.hash
-        }
+        let contains = delegates.contains { $0.delegate?.hash == delegate.hash }
         // if not contains, append it with weak wrapped
-        if contains == false {
+        if !contains {
             let week = WeakNetworkEyeDelegate(delegate: delegate)
-            
-            self.delegates.append(week)
+            delegates.append(week)
         }
     }
     
-    open class func remove(delegate:NetworkEyeDelegate) {
-        self.delegates = self.delegates.filter {
-            // filter null weak delegate
-            return $0.delegate != nil
-            }.filter {
+    public class func remove(delegate:NetworkEyeDelegate) {
+        delegates = delegates
+            .filter {
+                // filter null weak delegate
+                $0.delegate != nil
+            }
+            .filter {
                 // filter the delegate from parameter
-                return $0.delegate?.hash != delegate.hash
-        }
+                $0.delegate?.hash != delegate.hash
+            }
     }
     
     fileprivate var connection: NSURLConnection?
-    
+
     fileprivate var ca_request: URLRequest?
     fileprivate var ca_response: URLResponse?
     fileprivate var ca_data:Data?
@@ -62,91 +59,79 @@ class EyeProtocol: URLProtocol {
 
 extension EyeProtocol {
     override class func canInit(with request: URLRequest) -> Bool {
-        
-        guard let scheme = request.url?.scheme else {
-            return false
-        }
-        
-        guard scheme == "http" || scheme == "https" else {
-            return false
-        }
-        
-        guard URLProtocol.property(forKey: AppNetworkGreenCard, in: request) == nil else {
-            return false
-        }
-        
+        guard let scheme = request.url?.scheme else { return false }
+        guard scheme == "http" || scheme == "https" else { return false }
+        guard URLProtocol.property(forKey: AppNetworkGreenCard, in: request) == nil else { return false }
         return true
     }
     
     override class func canonicalRequest(for request: URLRequest) -> URLRequest {
-        
-        let req = (request as NSURLRequest).mutableCopy() as! NSMutableURLRequest
+        guard let req = (request as NSURLRequest).mutableCopy() as? NSMutableURLRequest else { return .init(url: .init(fileReferenceLiteralResourceName: "")) }
         URLProtocol.setProperty(true, forKey: AppNetworkGreenCard, in: req)
-        return req.copy() as! URLRequest
+        guard let request = req.copy() as? URLRequest else { return .init(url: .init(fileReferenceLiteralResourceName: "")) }
+        return request
     }
     
     override func startLoading() {
-        let request = EyeProtocol.canonicalRequest(for: self.request)
-        self.connection = NSURLConnection(request: request, delegate: self, startImmediately: true)
-        
-        self.ca_request = self.request
+        let request = EyeProtocol.canonicalRequest(for: request)
+        connection = NSURLConnection(request: request, delegate: self, startImmediately: true)
+        ca_request = request
     }
     
     override func stopLoading() {
-        self.connection?.cancel()
-        for element in EyeProtocol.delegates {
-            element.delegate?.networkEyeDidCatch(with: self.ca_request, response: self.ca_response, data: self.ca_data)
+        connection?.cancel()
+        EyeProtocol.delegates.forEach {
+            $0.delegate?.networkEyeDidCatch(with: ca_request, response: ca_response, data: ca_data)
         }
     }
 }
 
 extension EyeProtocol: NSURLConnectionDelegate {
     func connection(_ connection: NSURLConnection, didFailWithError error: Error) {
-        self.client?.urlProtocol(self, didFailWithError: error)
+        client?.urlProtocol(self, didFailWithError: error)
     }
     
     func connectionShouldUseCredentialStorage(_ connection: NSURLConnection) -> Bool {
-        return true
+        true
     }
     
     func connection(_ connection: NSURLConnection, didReceive challenge: URLAuthenticationChallenge) {
-        self.client?.urlProtocol(self, didReceive: challenge)
+        client?.urlProtocol(self, didReceive: challenge)
     }
     
     func connection(_ connection: NSURLConnection, didCancel challenge: URLAuthenticationChallenge) {
-        self.client?.urlProtocol(self, didCancel: challenge)
+        client?.urlProtocol(self, didCancel: challenge)
     }
 }
 
 extension EyeProtocol: NSURLConnectionDataDelegate {
-    
     func connection(_ connection: NSURLConnection, willSend request: URLRequest, redirectResponse response: URLResponse?) -> URLRequest? {
-        if response != nil {
-            self.ca_response = response
-            self.client?.urlProtocol(self, wasRedirectedTo: request, redirectResponse: response!)
+        if let response = response {
+            ca_response = response
+            client?.urlProtocol(self, wasRedirectedTo: request, redirectResponse: response)
         }
         return request
     }
     
     func connection(_ connection: NSURLConnection, didReceive response: URLResponse) {
-        self.client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: URLCache.StoragePolicy.allowed)
-        self.ca_response = response
+        client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .allowed)
+        ca_response = response
     }
     
     func connection(_ connection: NSURLConnection, didReceive data: Data) {
-        self.client?.urlProtocol(self, didLoad: data)
-        if self.ca_data == nil {
-            self.ca_data = data
-        }else {
-            self.ca_data!.append(data)
+        client?.urlProtocol(self, didLoad: data)
+        if ca_data == nil {
+            ca_data = data
+        } else {
+            ca_data?.append(data)
         }
     }
     
     func connection(_ connection: NSURLConnection, willCacheResponse cachedResponse: CachedURLResponse) -> CachedURLResponse? {
-        return cachedResponse
+        cachedResponse
     }
     
     func connectionDidFinishLoading(_ connection: NSURLConnection) {
-        self.client?.urlProtocolDidFinishLoading(self)
+        client?.urlProtocolDidFinishLoading(self)
     }
 }

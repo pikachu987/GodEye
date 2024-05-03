@@ -9,12 +9,12 @@
 import Foundation
 
 final class CommandRecordModel: NSObject {
-    private(set) var command: String!
-    private(set) var actionResult: String!
-    
-    init(command:String,actionResult:String) {
-        super.init()
+    let command: String
+    let actionResult: String
+
+    init(command: String, actionResult: String) {
         self.command = command
         self.actionResult = actionResult
+        super.init()
     }
 }

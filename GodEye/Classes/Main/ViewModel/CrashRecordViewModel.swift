@@ -8,52 +8,43 @@
 
 import Foundation
 
-class CrashRecordViewModel: BaseRecordViewModel {
-    private(set) var model:CrashRecordModel!
-    
-    init(_ model:CrashRecordModel) {
-        super.init()
-        self.model = model
+class CrashRecordViewModel: BaseRecordViewModel<CrashRecordModel> {
+    init(_ model: CrashRecordModel) {
+        super.init(model: model)
     }
     
-    func attributeString() -> NSAttributedString {
-        
+    override func attributeString(type: RecordORMAttributedType) -> NSAttributedString {
         let result = NSMutableAttributedString()
-        
-        result.append(self.headerString())
-        result.append(self.nameString())
-        result.append(self.reasonString())
-        result.append(self.appinfoString())
-        result.append(self.callStackString())
+        result.append(headerString(type: type))
+        result.append(nameString(type: type))
+        result.append(reasonString(type: type))
+        result.append(appinfoString(type: type))
+        result.append(callStackString(type: type))
         return result
     }
     
-    private func headerString() -> NSAttributedString {
-        let type = self.model.type == .exception ? "Exception" : "SIGNAL"
-        return self.headerString(with: "CRASH", content: type, color: UIColor(hex: 0xDF1921))
+    private func headerString(type: RecordORMAttributedType) -> NSAttributedString {
+        let contentType = model.type == .exception ? "Exception" : "SIGNAL"
+        return headerString(with: type, prefix: "CRASH", content: contentType, color: UIColor(hex: 0xDF1921))
     }
     
-    private func nameString() -> NSAttributedString {
-        return self.contentString(with: "NAME", content: self.model.name)
+    private func nameString(type: RecordORMAttributedType) -> NSAttributedString {
+        contentString(with: type, prefix: "NAME", content: model.name)
     }
     
-    private func reasonString() -> NSAttributedString {
-        return self.contentString(with: "REASON", content: self.model.reason)
+    private func reasonString(type: RecordORMAttributedType) -> NSAttributedString {
+        contentString(with: type, prefix: "REASON", content: model.reason)
     }
     
-    private func appinfoString() -> NSAttributedString {
-        return self.contentString(with: "APPINFO", content: self.model.appinfo)
+    private func appinfoString(type: RecordORMAttributedType) -> NSAttributedString {
+        contentString(with: type, prefix: "APPINFO", content: model.appinfo)
     }
     
-    private func callStackString() -> NSAttributedString {
-        let result = NSMutableAttributedString(attributedString: self.contentString(with: "CALL STACK", content: self.model.callStack))
-        let  range = result.string.NS.range(of: self.model.callStack!)
+    private func callStackString(type: RecordORMAttributedType) -> NSAttributedString {
+        let result = NSMutableAttributedString(attributedString: contentString(with: type, prefix: "CALL STACK", content: model.callStack))
+        let  range = result.string.NS.range(of: model.callStack)
         if range.location != NSNotFound {
-            let att = [NSAttributedString.Key.font:UIFont(name: "Courier", size: 6)!,
-                       NSAttributedString.Key.foregroundColor:UIColor.white] as! [NSAttributedString.Key : Any]
-            result.setAttributes(att, range: range)
-            
-            
+            result.setAttributes(attributes(with: type, fontSize: type.contentDetailFontSize, link: .tap), range: range)
         }
         return result
     }

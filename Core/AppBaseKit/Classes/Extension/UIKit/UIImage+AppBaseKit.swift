@@ -12,11 +12,9 @@ import UIKit
 // MARK: - Resize
 extension UIImage {
     
-    public func resizeImage(newSize:CGSize) -> UIImage? {
-        let size = self.size
-        
-        let widthRatio  = newSize.width  / self.size.width
-        let heightRatio = newSize.height / self.size.height
+    public func resizeImage(newSize: CGSize) -> UIImage? {
+        let widthRatio  = newSize.width  / size.width
+        let heightRatio = newSize.height / size.height
         
         // Figure out what our orientation is, and use that to form the rectangle
         var newSize: CGSize
@@ -31,19 +29,19 @@ extension UIImage {
         
         // Actually do the resizing to the rect using the ImageContext stuff
         UIGraphicsBeginImageContextWithOptions(newSize, false, 1.0)
-        self.draw(in: rect)
+        draw(in: rect)
         let newImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         
         return newImage
     }
     
-    public func realSize() -> CGSize {
-        return CGSize(width:self.size.width * self.scale, height:self.size.height * self.scale)
+    public var realSize: CGSize {
+        CGSize(width: size.width * scale, height: size.height * scale)
     }
     
-    public func isSquaresSize() -> Bool {
-        let size = self.realSize()
+    public var isSquaresSize: Bool {
+        let size = realSize
         return size.width == size.height
     }
 }
@@ -57,19 +55,19 @@ public extension UIImage {
     /// - parameter block: 绘制block
     ///
     /// - returns: 生成的新图
-    public func drawGraphics(with block:(CGContext,CGRect) -> Void) -> UIImage? {
-        
-        let size = self.size
-        let rect = CGRect(x:0, y:0, width:size.width, height:size.height)
+    public func drawGraphics(with block: (CGContext,CGRect) -> Void) -> UIImage? {
+
+        let size = size
+        let rect = CGRect(x:0, y:0, width: size.width, height: size.height)
         UIGraphicsBeginImageContextWithOptions(size, false, 0.0)
-        self.draw(at: CGPoint.zero)
+        draw(at: CGPoint.zero)
         let context: CGContext = UIGraphicsGetCurrentContext()!
         block(context,rect)
         
-        let image = UIGraphicsGetImageFromCurrentImageContext();
-        UIGraphicsEndImageContext();
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
         
-        return image;
+        return image
     }
     
     /**
@@ -80,23 +78,21 @@ public extension UIImage {
      
      - returns: 生成的图片
      */
-    public class func image(size: CGSize, drawingBlock:(CGContext,CGRect) -> Void) -> UIImage? {
-        
-        guard size.equalTo(CGSize()) == false else {
-            return nil
-        }
-        
+    public class func image(size: CGSize, drawingBlock: (CGContext,CGRect) -> Void) -> UIImage? {
+
+        guard size.equalTo(CGSize()) == false else { return nil }
+
         let rect = CGRect(x:0, y:0, width:size.width, height:size.height)
         UIGraphicsBeginImageContextWithOptions(rect.size, false, 0.0)
-        let context: CGContext = UIGraphicsGetCurrentContext()!
+        guard let context: CGContext = UIGraphicsGetCurrentContext() else { return nil }
         context.clear(rect)
         
         drawingBlock(context,rect)
         
-        let image = UIGraphicsGetImageFromCurrentImageContext();
-        UIGraphicsEndImageContext();
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
         
-        return image;
+        return image
     }
     
     /**
@@ -107,13 +103,11 @@ public extension UIImage {
      
      - returns: 生成的图片对象
      */
-    public class func image(color:UIColor, size:CGSize) ->UIImage? {
-        
-        guard size.equalTo(CGSize()) == false else {
-            return nil
-        }
-        
-        return UIImage.image(size: size) { (context:CGContext, rect:CGRect) in
+    public class func image(color: UIColor, size: CGSize) ->UIImage? {
+
+        guard size.equalTo(CGSize()) == false else { return nil }
+
+        return UIImage.image(size: size) { (context: CGContext, rect: CGRect) in
             context.setFillColor(color.cgColor)
             context.fill(rect)
         }

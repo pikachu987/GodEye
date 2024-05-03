@@ -16,24 +16,24 @@ public class AppNavigationController: UINavigationController {
         super.viewDidLoad()
         
         // 获取系统自带滑动手势的target对象
-        let target = self.interactivePopGestureRecognizer!.delegate;
-        
-        // 创建全屏滑动手势，调用系统自带滑动手势的target的action方法
-        let pan = UIPanGestureRecognizer(target: target, action: Selector("handleNavigationTransition:"))
-        
-        // 设置手势代理，拦截手势触发
-        pan.delegate = self;
-        
-        // 给导航控制器的view添加全屏滑动手势
-        self.view.addGestureRecognizer(pan);
+        interactivePopGestureRecognizer?.delegate.map {
+            // 创建全屏滑动手势，调用系统自带滑动手势的target的action方法
+            let pan = UIPanGestureRecognizer(target: $0, action: Selector("handleNavigationTransition:"))
+
+            // 设置手势代理，拦截手势触发
+            pan.delegate = self
+
+            // 给导航控制器的view添加全屏滑动手势
+            view.addGestureRecognizer(pan)
+        }
         
         // 禁止使用系统自带的滑动手势
-        self.interactivePopGestureRecognizer!.isEnabled = false;
+        interactivePopGestureRecognizer!.isEnabled = false
     }
     
     override public func pushViewController(_ viewController: UIViewController, animated: Bool) {
         
-        if self.viewControllers.count > 0 {
+        if viewControllers.count > 0 {
             viewController.hidesBottomBarWhenPushed = true
         }
         super.pushViewController(viewController, animated: animated)
@@ -44,17 +44,15 @@ public class AppNavigationController: UINavigationController {
 extension AppNavigationController: UIGestureRecognizerDelegate {
     
     public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        let translation: CGPoint = (gestureRecognizer as! UIPanGestureRecognizer).translation(in: self.view.superview)
-        
-        guard self.enable == true else {
-            return false
-        }
-        
+        guard let translation: CGPoint = (gestureRecognizer as? UIPanGestureRecognizer)?.translation(in: view.superview) else { return false }
+
+        guard enable else { return false }
+
         if (translation.x < 0) {
             return false //往右滑返回，往左滑不做操作
         }
         
-        if (self.viewControllers.count <= 1) {
+        if (viewControllers.count <= 1) {
             return false
         }
         return true

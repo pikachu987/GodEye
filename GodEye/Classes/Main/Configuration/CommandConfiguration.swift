@@ -16,12 +16,11 @@ open class CommandConfiguration: NSObject {
     //--------------------------------------------------------------------------
     // MARK: OPEN FUNCTION
     //--------------------------------------------------------------------------
-    
-    
+
     /// Add a command with description and action
-    open func add(command:String,description:String,action:@escaping () ->(String)) {
+    open func add(command: String, description: String, action: @escaping () -> (String)) {
         let model = CommandModel(command: command, description: description, action: action)
-        self.commandList.append(model)
+        commandList.append(model)
     }
     
     //--------------------------------------------------------------------------
@@ -29,23 +28,23 @@ open class CommandConfiguration: NSObject {
     //--------------------------------------------------------------------------
     
     /// execute the commnad by the name,and call the callback will complete the action
-    func execute(command:String,complete:(CommandRecordModel)->()) {
-        var command = command.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+    func execute(command: String, complete: (CommandRecordModel) -> ()) {
+        var command = command.trimmingCharacters(in: .whitespacesAndNewlines)
         
         var recordModel: CommandRecordModel? = nil
         if command == "help" {
             var commandDescription = ""
-            for model in self.commandList {
-                let line = "    + \(model.command!)   \(model.comdDescription!)\n"
+            for model in commandList {
+                let line = "    + \(model.command)   \(model.comdDescription)\n"
                 commandDescription += line
             }
             let result = "\n\n GodEye:\n    $ Automaticly disply Log,Crash,Network,ANR,Leak,CPU,RAM,FPS,NetFlow,Folder and etc with one line of code. Just like God opened his eyes \n\n Commands:\n\(commandDescription)"
             recordModel = CommandRecordModel(command: command, actionResult: result)
-        }else {
-            if let model = self.model(of: command) {
+        } else {
+            if let model = model(of: command) {
                 let result = model.action()
                 recordModel = CommandRecordModel(command: command, actionResult: result)
-            }else {
+            } else {
                 recordModel = CommandRecordModel(command: command, actionResult: "    \(command) not found, enter 'help' to view all commands\n")
             }
         }
@@ -59,8 +58,8 @@ open class CommandConfiguration: NSObject {
     //--------------------------------------------------------------------------
     
     /// get the commnad model with commnad name
-    private func model(of command:String) -> CommandModel? {
-        for model in self.commandList {
+    private func model(of command: String) -> CommandModel? {
+        for model in commandList {
             if model.command == command {
                 return model
             }
@@ -77,15 +76,15 @@ open class CommandConfiguration: NSObject {
     // MARK: INNER CLASS
     //--------------------------------------------------------------------------
     class CommandModel: NSObject {
-        private(set) var command: String!
-        private(set) var comdDescription: String!
-        private(set) var action: (() ->(String))!
-        
-        init(command:String,description:String,action:@escaping () ->(String)) {
-            super.init()
+        let command: String
+        let comdDescription: String
+        let action: (() -> (String))
+
+        init(command: String, description: String, action: @escaping () -> (String)) {
             self.command = command
             self.comdDescription = description
             self.action = action
+            super.init()
         }
         
     }

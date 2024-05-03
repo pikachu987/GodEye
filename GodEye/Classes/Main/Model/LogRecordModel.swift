@@ -14,72 +14,64 @@ enum LogRecordModelType:Int {
     case warning = 3
     case error = 4
     
-    func string() -> String {
+    var string: String {
         switch self {
-        case .asl:
-            return "ASL"
-        case .log:
-            return "LOG"
-        case .warning:
-            return "WARNING"
-        case .error:
-            return "ERROR"
+        case .asl: return "ASL"
+        case .log: return "LOG"
+        case .warning:return "WARNING"
+        case .error:return "ERROR"
         }
     }
     
-    func color() -> UIColor {
+    var color: UIColor {
         switch self {
-        case .asl:
-            return UIColor(hex: 0x94C76F)
-        case .log:
-            return UIColor(hex: 0x94C76F)
-        case .warning:
-            return UIColor(hex: 0xFEC42E)
-        case .error:
-            return UIColor(hex: 0xDF1921)
+        case .asl: return UIColor(hex: 0x94C76F)
+        case .log: return UIColor(hex: 0x94C76F)
+        case .warning: return UIColor(hex: 0xFEC42E)
+        case .error: return UIColor(hex: 0xDF1921)
         }
     }
 }
 
 final class LogRecordModel: NSObject {
-    private(set) var type: LogRecordModelType!
-    /// date for Time stamp
-    private(set) var date: String?
-    
-    /// thread which log the message
-    private(set) var thread: String?
-    
-    /// filename with extension
-    private(set) var file: String?
-    
-    /// number of line in source code file
-    private(set) var line: Int?
-    
-    /// name of the function which log the message
-    private(set) var function: String?
-    
+    let type: LogRecordModelType
+
     /// message be logged
-    private(set) var message: String!
-    
-    init(model:LogModel) {
-        super.init()
-        self.type = self.type(of: model.type)
-        self.date = model.date.string(with: "yyyy-MM-dd HH:mm:ss")
-        self.thread = model.thread.threadName
-        self.file = model.file
-        self.line = model.line
-        self.function = model.function
+    let message: String
+
+    /// date for Time stamp
+    let date: String?
+
+    /// thread which log the message
+    let thread: String?
+
+    /// filename with extension
+    let file: String?
+
+    /// number of line in source code file
+    let line: Int?
+
+    /// name of the function which log the message
+    let function: String?
+
+    init(model: LogModel) {
+        self.type = Self.type(of: model.type)
         self.message = model.message
+        date = model.date.string(with: "yyyy-MM-dd HH:mm:ss")
+        thread = model.thread.threadName
+        file = model.file
+        line = model.line
+        function = model.function
+        super.init()
     }
     
-    init(type:LogRecordModelType,
-         message:String,
-         date:String? = nil,
-         thread:String? = nil,
+    init(type: LogRecordModelType,
+         message: String,
+         date: String? = nil,
+         thread: String? = nil,
          file: String? = nil,
          line: Int? = nil,
          function: String? = nil) {
-        super.init()
         self.type = type
         self.message = message
         self.date = date
@@ -87,16 +79,14 @@ final class LogRecordModel: NSObject {
         self.file = file
         self.line = line
         self.function = function
+        super.init()
     }
     
-    private func type(of log4gType:Log4gType) -> LogRecordModelType {
+    private static func type(of log4gType: Log4gType) -> LogRecordModelType {
         switch log4gType {
-        case .log:
-            return LogRecordModelType.log
-        case .warning:
-            return LogRecordModelType.warning
-        case .error:
-            return LogRecordModelType.error
+        case .log: return .log
+        case .warning: return .warning
+        case .error: return .error
         }
     }
 }

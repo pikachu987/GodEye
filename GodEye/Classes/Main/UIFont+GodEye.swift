@@ -9,8 +9,7 @@
 import Foundation
 
 extension UIFont {
-    
-    class func courier(with size:CGFloat) ->UIFont {
-        return UIFont(name: "Courier", size: size)!
+    class func courier(with size: CGFloat) -> UIFont {
+        return UIFont(name: "Courier", size: size) ?? .systemFont(ofSize: size)
     }
 }

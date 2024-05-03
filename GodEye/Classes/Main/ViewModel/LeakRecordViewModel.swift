@@ -8,27 +8,18 @@
 
 import Foundation
 
-class LeakRecordViewModel: BaseRecordViewModel {
-    
-    private(set) var model:LeakRecordModel!
-    
-    init(_ model:LeakRecordModel) {
-        super.init()
-        self.model = model
+class LeakRecordViewModel: BaseRecordViewModel<LeakRecordModel> {
+    init(_ model: LeakRecordModel) {
+        super.init(model: model)
     }
     
-    func attributeString() -> NSAttributedString {
-        
+    override func attributeString(type: RecordORMAttributedType) -> NSAttributedString {
         let result = NSMutableAttributedString()
-        
-        result.append(self.headerString())
+        result.append(headerString(type: type))
         return result
     }
     
-    private func headerString() -> NSAttributedString {
-        return self.headerString(with: "Leak", content: "[\(self.model.clazz): \(self.model.address)]", color: UIColor(hex: 0xB754C4))
+    private func headerString(type: RecordORMAttributedType) -> NSAttributedString {
+        headerString(with: type, prefix: "Leak", content: "[\(model.clazz): \(model.address)]", color: UIColor(hex: 0xB754C4))
     }
-    
-  
-    
 }

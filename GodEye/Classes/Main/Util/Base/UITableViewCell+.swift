@@ -9,7 +9,7 @@
 import Foundation
 
 extension UITableViewCell {
-    class func identifier() -> String {
-        return NSStringFromClass(self.classForCoder())
+    class var identifier: String {
+        NSStringFromClass(classForCoder())
     }
 }

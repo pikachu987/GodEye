@@ -1,47 +1,47 @@
 PODS:
   - ESPullToRefresh (2.9.3)
-  - GodEye (2.0.1):
+  - GodEye (2.0.3):
     - ESPullToRefresh (~> 2.7)
-    - GodEye/ANREye (= 2.0.1)
-    - GodEye/AppBaseKit (= 2.0.1)
-    - GodEye/ASLEye (= 2.0.1)
-    - GodEye/CrashEye (= 2.0.1)
-    - GodEye/LeakEye (= 2.0.1)
-    - GodEye/Log4G (= 2.0.1)
-    - GodEye/NetworkEye (= 2.0.1)
-    - GodEye/SystemEye (= 2.0.1)
-    - GodEye/UIThreadEye (= 2.0.1)
-    - SQLite.swift (= 0.11.4)
-  - GodEye/ANREye (2.0.1):
+    - GodEye/ANREye (= 2.0.3)
+    - GodEye/AppBaseKit (= 2.0.3)
+    - GodEye/ASLEye (= 2.0.3)
+    - GodEye/CrashEye (= 2.0.3)
+    - GodEye/LeakEye (= 2.0.3)
+    - GodEye/Log4G (= 2.0.3)
+    - GodEye/NetworkEye (= 2.0.3)
+    - GodEye/SystemEye (= 2.0.3)
+    - GodEye/UIThreadEye (= 2.0.3)
+    - SQLite.swift (= 0.13.3)
+  - GodEye/ANREye (2.0.3):
     - ESPullToRefresh (~> 2.7)
-    - SQLite.swift (= 0.11.4)
-  - GodEye/AppBaseKit (2.0.1):
+    - SQLite.swift (= 0.13.3)
+  - GodEye/AppBaseKit (2.0.3):
     - ESPullToRefresh (~> 2.7)
-    - SQLite.swift (= 0.11.4)
-  - GodEye/ASLEye (2.0.1):
+    - SQLite.swift (= 0.13.3)
+  - GodEye/ASLEye (2.0.3):
     - ESPullToRefresh (~> 2.7)
-    - SQLite.swift (= 0.11.4)
-  - GodEye/CrashEye (2.0.1):
+    - SQLite.swift (= 0.13.3)
+  - GodEye/CrashEye (2.0.3):
     - ESPullToRefresh (~> 2.7)
-    - SQLite.swift (= 0.11.4)
-  - GodEye/LeakEye (2.0.1):
+    - SQLite.swift (= 0.13.3)
+  - GodEye/LeakEye (2.0.3):
     - ESPullToRefresh (~> 2.7)
-    - SQLite.swift (= 0.11.4)
-  - GodEye/Log4G (2.0.1):
+    - SQLite.swift (= 0.13.3)
+  - GodEye/Log4G (2.0.3):
     - ESPullToRefresh (~> 2.7)
-    - SQLite.swift (= 0.11.4)
-  - GodEye/NetworkEye (2.0.1):
+    - SQLite.swift (= 0.13.3)
+  - GodEye/NetworkEye (2.0.3):
     - ESPullToRefresh (~> 2.7)
-    - SQLite.swift (= 0.11.4)
-  - GodEye/SystemEye (2.0.1):
+    - SQLite.swift (= 0.13.3)
+  - GodEye/SystemEye (2.0.3):
     - ESPullToRefresh (~> 2.7)
-    - SQLite.swift (= 0.11.4)
-  - GodEye/UIThreadEye (2.0.1):
+    - SQLite.swift (= 0.13.3)
+  - GodEye/UIThreadEye (2.0.3):
     - ESPullToRefresh (~> 2.7)
-    - SQLite.swift (= 0.11.4)
-  - SQLite.swift (0.11.4):
-    - SQLite.swift/standard (= 0.11.4)
-  - SQLite.swift/standard (0.11.4)
+    - SQLite.swift (= 0.13.3)
+  - SQLite.swift (0.13.3):
+    - SQLite.swift/standard (= 0.13.3)
+  - SQLite.swift/standard (0.13.3)
 
 DEPENDENCIES:
   - GodEye (from `../`)
@@ -57,9 +57,9 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   ESPullToRefresh: 0d68daa602b343c81753a1b95e09fd0bfcddfd40
-  GodEye: d1f5192f6cb70a54cea999f27c0dc35923028153
-  SQLite.swift: 3e3bee21da701b5b9f87c4a672cb54f233505692
+  GodEye: 75429c67270215add4546e9171e34ce2df3b03e7
+  SQLite.swift: 903bfa3bc9ab06345fdfbb578e34f47cfcf417da
 
-PODFILE CHECKSUM: 1e3cc37e34a95e7b24b1946d6f44623e9ba4f950
+PODFILE CHECKSUM: f7e610f59983813a85771552af370866e66ae1f8
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.14.3

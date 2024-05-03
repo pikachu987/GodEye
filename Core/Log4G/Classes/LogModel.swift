@@ -15,34 +15,32 @@ public enum Log4gType: Int {
 }
 
 open class LogModel: NSObject {
-    
-    open private(set) var type: Log4gType!
-    
+    public let type: Log4gType
+
     /// date for Time stamp
-    open private(set) var date: Date!
-    
+    public let date: Date
+
     /// thread which log the message
-    open private(set) var thread: Thread!
-    
+    public let thread: Thread
+
     /// filename with extension
-    open private(set) var file: String!
-    
+    public let file: String
+
     /// number of line in source code file
-    open private(set) var line: Int!
-    
+    public let line: Int
+
     /// name of the function which log the message
-    open private(set) var function: String!
-    
+    public let function: String
+
     /// message be logged
-    open private(set) var message: String!
-    
-    init(type:Log4gType,
-         thread:Thread,
+    public let message: String
+
+    init(type: Log4gType,
+         thread: Thread,
          message: String,
          file: String,
          line: Int,
          function: String) {
-        super.init()
         self.date = Date()
         self.type = type
         self.thread = thread
@@ -50,5 +48,6 @@ open class LogModel: NSObject {
         self.line = line
         self.function = function
         self.message = message
+        super.init()
     }
 }

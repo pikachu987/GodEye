@@ -12,7 +12,7 @@ import Foundation
 // MARK: - Log4gDelegate
 //--------------------------------------------------------------------------
 @objc public protocol Log4GDelegate: NSObjectProtocol {
-    func log4gDidRecord(with model:LogModel)
+    func log4gDidRecord(with model: LogModel)
 }
 
 //--------------------------------------------------------------------------
@@ -37,12 +37,12 @@ open class Log4G: NSObject {
                         file: String = #file,
                         line: Int = #line,
                         function: String = #function) {
-        self.shared.record(type: .log,
-                           thread: Thread.current,
-                           message: "\(message)",
-                           file: file,
-                           line: line,
-                           function: function)
+        shared.record(type: .log,
+                      thread: Thread.current,
+                      message: "\(message)",
+                      file: file,
+                      line: line,
+                      function: function)
     }
     
     /// record a warning type message
@@ -56,12 +56,12 @@ open class Log4G: NSObject {
                             file: String = #file,
                             line: Int = #line,
                             function: String = #function) {
-        self.shared.record(type: .warning,
-                           thread: Thread.current,
-                           message: "\(message)",
-                           file: file,
-                           line: line,
-                           function: function)
+        shared.record(type: .warning,
+                      thread: Thread.current,
+                      message: "\(message)",
+                      file: file,
+                      line: line,
+                      function: function)
     }
     
     /// record an error type message
@@ -75,12 +75,12 @@ open class Log4G: NSObject {
                           file: String = #file,
                           line: Int = #line,
                           function: String = #function) {
-        self.shared.record(type: .error,
-                           thread: Thread.current,
-                           message: "\(message)",
-                           file: file,
-                           line: line,
-                           function: function)
+        shared.record(type: .error,
+                      thread: Thread.current,
+                      message: "\(message)",
+                      file: file,
+                      line: line,
+                      function: function)
     }
     
     //--------------------------------------------------------------------------
@@ -102,23 +102,17 @@ open class Log4G: NSObject {
                      file: String,
                      line: Int,
                      function: String) {
-        self.queue.async {
+        queue.async { [weak self] in
+            guard let self = self else { return }
             let model = LogModel(type: type,
                                  thread: thread,
                                  message: message,
                                  file: self.name(of: file),
                                  line: line,
                                  function: function)
-            print(message)
-            
-           
             for delegate in self.delegates.objectEnumerator()  {
                 (delegate as? Log4GDelegate)?.log4gDidRecord(with: model)
             }
-            
-//            while let delegate: Log4GDelegate = self.delegates.objectEnumerator().nextObject() as? Log4GDelegate {
-//                delegate.log4gDidRecord(with: model)
-//            }
         }
     }
     
@@ -127,7 +121,7 @@ open class Log4G: NSObject {
     /// - Parameter file: path of file
     /// - Returns: filename
     private func name(of file:String) -> String {
-        return URL(fileURLWithPath: file).lastPathComponent
+        URL(fileURLWithPath: file).lastPathComponent
     }
     
     //MARK: - Private Variable
@@ -148,19 +142,17 @@ extension Log4G {
     
     open class var delegateCount: Int {
         get {
-            return self.shared.delegates.count
+            shared.delegates.count
         }
     }
     
     open class func add(delegate:Log4GDelegate) {
-        let log4g = self.shared
-        
+        let log4g = shared
         log4g.delegates.add(delegate)
     }
     
     open class func remove(delegate:Log4GDelegate) {
-        let log4g = self.shared
-        
+        let log4g = shared
         log4g.delegates.remove(delegate)
     }
 }

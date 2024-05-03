@@ -43,8 +43,8 @@ class DemoModelFactory: NSObject {
         models.append(model)
         
         model = DemoModel(title: "Signal Crash") {
-            var a = [String]()
-            _ = a[2]
+            let testValue = [String]()
+            _ = testValue[2]
         }
         models.append(model)
         
@@ -59,18 +59,24 @@ class DemoModelFactory: NSObject {
         
         var title = "Send Sync Connection Network"
         var model = DemoModel(title: title) {
-            _ = try! NSURLConnection.sendSynchronousRequest(request, returning: nil)
-            alert(t: "Completed", title)
+            let semaphore = DispatchSemaphore(value: 0)
+            URLSession.shared.dataTask(with: request) { (httpData, response, error) in
+                semaphore.signal()
+            }.resume()
+            semaphore.wait()
+            DispatchQueue.main.async {
+                AppDelegate.showAlert(t: "Completed", m: title)
+            }
         }
         new.append(model)
         
         title = "Send Async Connection Network"
         model = DemoModel(title: title) {
-            NSURLConnection.sendAsynchronousRequest(request,
-                                                    queue: OperationQueue.main,
-                                                    completionHandler: {(response, data, error) in
-                                                        alert(t: "Completed", title)
-            })
+            URLSession.shared.dataTask(with: request, completionHandler: { _, _, _ in
+                DispatchQueue.main.async {
+                    AppDelegate.showAlert(t: "Completed", m: title)
+                }
+            }).resume()
         }
         new.append(model)
         
@@ -79,7 +85,7 @@ class DemoModelFactory: NSObject {
             let session = URLSession.shared
             URLSession.shared.dataTask(with: request)
             let task = session.dataTask(with: request) { (data:Data?, response:URLResponse?, error:Error?) in
-                alert(t: "Completed", title)
+                AppDelegate.showAlert(t: "Completed", m: title)
             }
             task.resume()
         }
@@ -92,7 +98,7 @@ class DemoModelFactory: NSObject {
                                      delegate: nil,
                                      delegateQueue: OperationQueue.current)
             let task = session.dataTask(with: request) { (data:Data?, response:URLResponse?, error:Error?) in
-                alert(t: "Completed", title)
+                AppDelegate.showAlert(t: "Completed", m: title)
             }
             task.resume()
         }
@@ -117,7 +123,7 @@ class DemoModelFactory: NSObject {
         let title = "Simulate ANR"
         let model = DemoModel(title: title) {
             sleep(4)
-            alert(t: "Completed", title)
+            AppDelegate.showAlert(t: "Completed", m: title)
         }
         models.append(model)
         

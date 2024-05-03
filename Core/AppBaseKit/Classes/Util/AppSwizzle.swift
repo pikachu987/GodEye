@@ -20,17 +20,17 @@ public extension NSObject {
     
     public class func swizzleInstanceMethod(origSelector: Selector,
                                             toAlterSelector alterSelector: Selector) -> SwizzleResult {
-        return self.swizzleMethod(origSelector: origSelector,
+        return swizzleMethod(origSelector: origSelector,
                                   toAlterSelector: alterSelector,
-                                  inAlterClass: self.classForCoder(),
+                                  inAlterClass: classForCoder(),
                                   isClassMethod: false)
     }
     
     public class func swizzleClassMethod(origSelector: Selector,
                                          toAlterSelector alterSelector: Selector) -> SwizzleResult {
-        return self.swizzleMethod(origSelector: origSelector,
+        return swizzleMethod(origSelector: origSelector,
                                   toAlterSelector: alterSelector,
-                                  inAlterClass: self.classForCoder(),
+                                  inAlterClass: classForCoder(),
                                   isClassMethod: true)
     }
     
@@ -38,7 +38,7 @@ public extension NSObject {
     public class func swizzleInstanceMethod(origSelector: Selector,
                                             toAlterSelector alterSelector: Selector,
                                             inAlterClass alterClass: AnyClass) -> SwizzleResult {
-        return self.swizzleMethod(origSelector: origSelector,
+        return swizzleMethod(origSelector: origSelector,
                                   toAlterSelector: alterSelector,
                                   inAlterClass: alterClass,
                                   isClassMethod: false)
@@ -47,7 +47,7 @@ public extension NSObject {
     public class func swizzleClassMethod(origSelector: Selector,
                                          toAlterSelector alterSelector: Selector,
                                          inAlterClass alterClass: AnyClass) -> SwizzleResult {
-        return self.swizzleMethod(origSelector: origSelector,
+        return swizzleMethod(origSelector: origSelector,
                                   toAlterSelector: alterSelector,
                                   inAlterClass: alterClass,
                                   isClassMethod: true)
@@ -55,27 +55,27 @@ public extension NSObject {
     
     
     private class func swizzleMethod(origSelector: Selector,
-                                     toAlterSelector alterSelector: Selector!,
-                                     inAlterClass alterClass: AnyClass!,
+                                     toAlterSelector alterSelector: Selector,
+                                     inAlterClass alterClass: AnyClass,
                                      isClassMethod:Bool) -> SwizzleResult {
         
         var alterClass: AnyClass? = alterClass
-        var origClass: AnyClass = self.classForCoder()
+        var origClass: AnyClass = classForCoder()
         if isClassMethod {
             alterClass = object_getClass(alterClass)
-            guard let _class = object_getClass(self.classForCoder()) else {
+            guard let _class = object_getClass(classForCoder()) else {
                 return .OriginMethodNotFound
             }
             origClass = _class
         }
         
-        return SwizzleMethod(origClass: origClass, origSelector: origSelector, toAlterSelector: alterSelector, inAlterClass: alterClass)
+        return SwizzleMethod(origClass: origClass, origSelector: origSelector, toAlterSelector: alterSelector, inAlterClass: alterClass!)
     }
 }
 
 
-private func SwizzleMethod(origClass:AnyClass!,origSelector: Selector,toAlterSelector alterSelector: Selector!,inAlterClass alterClass: AnyClass!) -> SwizzleResult{
-    
+private func SwizzleMethod(origClass: AnyClass, origSelector: Selector, toAlterSelector alterSelector: Selector, inAlterClass alterClass: AnyClass) -> SwizzleResult {
+
     guard  let origMethod: Method = class_getInstanceMethod(origClass, origSelector) else {
         return SwizzleResult.OriginMethodNotFound
     }
@@ -83,9 +83,7 @@ private func SwizzleMethod(origClass:AnyClass!,origSelector: Selector,toAlterSel
     guard let altMethod: Method = class_getInstanceMethod(alterClass, alterSelector) else {
         return SwizzleResult.AlternateMethodNotFound
     }
-    
-    
-    
+
     _ = class_addMethod(origClass,
                                  origSelector,method_getImplementation(origMethod),
                                  method_getTypeEncoding(origMethod))
@@ -98,5 +96,4 @@ private func SwizzleMethod(origClass:AnyClass!,origSelector: Selector,toAlterSel
     method_exchangeImplementations(origMethod, altMethod)
     
     return SwizzleResult.Succeed
-    
 }

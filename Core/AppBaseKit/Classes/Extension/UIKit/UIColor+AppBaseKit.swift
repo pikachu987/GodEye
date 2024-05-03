@@ -10,34 +10,33 @@ import Foundation
 import UIKit
 
 extension UIColor {
-    
-    public class func niceBlack() -> UIColor {
-        return UIColor(red: 30.0/255.0, green: 32.0/255.0, blue: 40.0/255.0, alpha: 1)
+    public class var niceBlack: UIColor {
+        UIColor(red: 30.0/255.0, green: 32.0/255.0, blue: 40.0/255.0, alpha: 1)
     }
     
-    public class func niceDuckBlack() -> UIColor {
-        return UIColor(red: 20.0/255.0, green: 21.0/255.0, blue: 27.0/255.0, alpha: 1)
+    public class var niceDuckBlack: UIColor {
+        UIColor(red: 20.0/255.0, green: 21.0/255.0, blue: 27.0/255.0, alpha: 1)
     }
     
-    public class func niceRed() -> UIColor {
-        return UIColor(red: 237.0/255.0, green: 66.0/255.0, blue: 82.0/255.0, alpha: 1)
+    public class var niceRed: UIColor {
+        UIColor(red: 237.0/255.0, green: 66.0/255.0, blue: 82.0/255.0, alpha: 1)
     }
     
-    public class func niceJHSRed() -> UIColor {
-        return UIColor(red: 235.0/255.0, green: 0.0/255.0, blue: 18.0/255.0, alpha: 1)
+    public class var niceJHSRed: UIColor {
+        UIColor(red: 235.0/255.0, green: 0.0/255.0, blue: 18.0/255.0, alpha: 1)
     }
 }
 
 // MARK: - RGB
 extension UIColor {
-    public convenience init(hex:Int, alpha:CGFloat = 1.0) {
+    public convenience init(hex: Int, alpha: CGFloat = 1.0) {
         let red: CGFloat = CGFloat((hex & 0xFF0000) >> 16) / 255.0
         let green: CGFloat = CGFloat((hex & 0x00FF00) >> 8) / 255.0
         let blue: CGFloat = CGFloat((hex & 0x0000FF)) / 255.0
         self.init(red: red, green: green, blue: blue, alpha: alpha)
     }
     
-    public convenience init?(hexString:String,alpha:CGFloat = 1.0) {
+    public convenience init?(hexString: String, alpha: CGFloat = 1.0) {
         let formatted = hexString.replacingOccurrences(of: "0x", with: "")
                                  .replacingOccurrences(of:"#", with: "")
         if let hex = Int(formatted, radix: 16) {
@@ -46,36 +45,36 @@ extension UIColor {
         return nil
     }
     
-    public func hexString(prefix:String = "") -> String {
-        let rgbFloat = self.rgba()
+    public func hexString(prefix: String = "") -> String {
+        let rgbFloat = rgba()
         
-        let result = self.string(of: rgbFloat.r) + self.string(of: rgbFloat.g) + self.string(of: rgbFloat.b)
+        let result = string(of: rgbFloat.r) + string(of: rgbFloat.g) + string(of: rgbFloat.b)
         return prefix + result.uppercased()
     }
     
-    private func string(of component:Int) -> String {
+    private func string(of component: Int) -> String {
         var result = String(format: "%x",  component)
         let count = result.count
         if count == 0 {
             return "00"
-        }else if count == 1 {
+        } else if count == 1 {
             return "0" + result
-        }else {
+        } else {
             return result
         }
     }
     
     
     public func hex() -> Int? {
-        return Int(self.hexString(), radix: 16)
+        Int(hexString(), radix: 16)
     }
     
-    public func rgba() -> (r:Int,g:Int,b:Int,a:CGFloat) {
+    public func rgba() -> (r: Int, g: Int, b: Int, a: CGFloat) {
         var r: CGFloat = 0
         var g: CGFloat = 0
         var b: CGFloat = 0
         var a: CGFloat = 0
-        self.getRed(&r, green: &g, blue: &b, alpha: &a)
+        getRed(&r, green: &g, blue: &b, alpha: &a)
         r = r * 255
         g = g * 255
         b = b * 255
@@ -87,7 +86,7 @@ extension UIColor {
 // MARK: - Gradient
 extension UIColor {
     
-    public class func gradient(startColor:UIColor,endColor:UIColor,fraction:CGFloat) -> UIColor {
+    public class func gradient(startColor: UIColor, endColor: UIColor, fraction: CGFloat) -> UIColor {
         var startR: CGFloat = 0, startG: CGFloat = 0, startB: CGFloat = 0, startA: CGFloat = 0
         startColor.getRed(&startR, green: &startG, blue: &startB, alpha: &startA)
         

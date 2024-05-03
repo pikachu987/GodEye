@@ -12,16 +12,16 @@ class AppBacktrace: NSObject {
     
     
     class func with(thread: Thread) -> String {
-        let machThread = self.bs_machThread(from: thread)
+        let machThread = bs_machThread(from: thread)
         return BSBacktraceLogger.backtrace(ofMachthread: machThread)
     }
     
     class func currentThread() -> String {
-        return self.with(thread: Thread.current)
+        return with(thread: Thread.current)
     }
     
     class func mainThread() -> String {
-        return self.with(thread: Thread.main)
+        return with(thread: Thread.main)
     }
     
     class func allThread() -> String {
@@ -46,10 +46,10 @@ class AppBacktrace: NSObject {
     
     
     
-    static var main_thread_id: mach_port_t!
+    static var main_thread_id: mach_port_t?
+
     
-    
-    private class func bs_machThread(from nsthread:Thread) -> thread_t {
+    private class func bs_machThread(from nsthread: Thread) -> thread_t {
         
         var name:[Int8] = Array(repeating:0, count:256)
         
@@ -64,8 +64,8 @@ class AppBacktrace: NSObject {
         let originName = nsthread.name
         nsthread.name = "\(currentTimestamp)"
         
-        if nsthread.isMainThread {
-            return self.main_thread_id
+        if nsthread.isMainThread, let main_thread_id = main_thread_id {
+            return main_thread_id
         }
         
         for i in 0..<count {
@@ -74,7 +74,7 @@ class AppBacktrace: NSObject {
             let pt = pthread_from_mach_thread_np(list![index])
             if nsthread.isMainThread {
                 
-                if list![index] == self.main_thread_id  {
+                if list![index] == main_thread_id  {
                     return list![index]
                 }
             }

@@ -15,14 +15,12 @@ import Foundation
 class Preparer: NSObject {
     
     class func binding() {
-        
         DispatchQueue.once { () in
             // UINavigationController
             var orig = #selector(UINavigationController.pushViewController(_:animated:))
             var alter = #selector(UINavigationController.app_pushViewController(_:animated:))
             UINavigationController.swizzleInstanceMethod(origSelector: orig, toAlterSelector: alter)
-            
-            
+
             // UIView
             orig = #selector(UIView.didMoveToSuperview)
             alter = #selector(UIView.app_didMoveToSuperview)
@@ -60,22 +58,22 @@ extension UINavigationController {
 extension UIView {
     
     @objc fileprivate func app_didMoveToSuperview() {
-        self.app_didMoveToSuperview()
+        app_didMoveToSuperview()
         
         var hasAliveParent = false
         
-        var r = self.next
+        var r = next
         while (r != nil) {
-            if r!.agent != nil {
+            guard let dummyR = r else { return }
+            if dummyR.agent != nil {
                 hasAliveParent = true
                 break
             }
-            
-            r = r!.next
+            r = dummyR.next
         }
         
         if hasAliveParent {
-            self.makeAlive()
+            makeAlive()
         }
     }
 }
@@ -94,7 +92,7 @@ extension UIViewController {
     @objc fileprivate func app_viewDidAppear(_ animated: Bool) {
         self.app_viewDidAppear(animated)
         
-        self.monitorAllRetainVariable(level: 0)
+        monitorAllRetainVariable(level: 0)
     }
 }
 

@@ -76,5 +76,4 @@ Pod::Spec.new do |s|
 
   
   s.dependency 'SQLite.swift', '0.13.3'
-  s.dependency 'ESPullToRefresh', '~> 2.7'
 end

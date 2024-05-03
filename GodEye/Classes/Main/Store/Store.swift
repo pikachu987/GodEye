@@ -14,17 +14,17 @@ class Store: NSObject {
     // 3.2(MB)
     private(set) var networkMB: Double = 0
     
-    private var change:((Double)->())?
+    private var change: ((Double) -> ())?
+
     func addNetworkByte(_ byte:Int64) {
-        self.networkMB += Double(max(byte, -1))
-        self.change?(self.networkMB);
+        networkMB += Double(max(byte, -1))
+        change?(networkMB)
     }
     
-    func networkByteDidChange(change:@escaping (Double)->()) {
+    func networkByteDidChange(change: @escaping (Double) -> ()) {
         self.change = change
-        
-        if self.networkMB > 0 {
-            self.change!(self.networkMB);
+        if networkMB > 0 {
+            self.change?(networkMB)
         }
     }
 }

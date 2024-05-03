@@ -18,7 +18,7 @@ extension NSObject {
     
     var agent: ObjectAgent? {
         get {
-            return objc_getAssociatedObject(self, &key.objectAgent) as? ObjectAgent
+            objc_getAssociatedObject(self, &key.objectAgent) as? ObjectAgent
         }
         set {
             objc_setAssociatedObject(self, &key.objectAgent, newValue, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
@@ -35,35 +35,36 @@ extension NSObject {
     ///
     /// - Parameter level: extend chain level
     func monitorAllRetainVariable(level: Int) {
-        if level >= 5 {
-            return
-        }
-        
+        if level >= 5 { return }
+
         var monitorVariables = [String]()
         
         //track class level1
-        if self.isSystemClass(self.classForCoder) == false {
-            let var_level1 = self.getAllVariableName(self.classForCoder)
+        if isSystemClass(classForCoder) == false {
+            let var_level1 = getAllVariableName(classForCoder)
             monitorVariables.append(contentsOf: var_level1)
         }
         
-        if self.isSystemClass(self.superclass) {
-            let var_level2 = self.getAllVariableName(self.superclass!)
-            monitorVariables.append(contentsOf: var_level2)
+        if isSystemClass(superclass) {
+            superclass.map {
+                let var_level2 = getAllVariableName($0)
+                monitorVariables.append(contentsOf: var_level2)
+            }
         }
         
-        if self.isSystemClass(self.superclass?.superclass()) {
-            let var_level3 = self.getAllVariableName(self.superclass!.superclass()!)
-            monitorVariables.append(contentsOf: var_level3)
+        if isSystemClass(superclass?.superclass()) {
+            superclass?.superclass().map {
+                let var_level3 = getAllVariableName($0)
+                monitorVariables.append(contentsOf: var_level3)
+            }
         }
         
         for name in monitorVariables {
-            
-            print(name)
+//            print(name)
             if name == "tabBarObservedScrollView" {
                 continue
             }
-            guard let cur = self.value(forKey: name) else {
+            guard let cur = value(forKey: name) else {
                 continue
             }
             
@@ -79,8 +80,8 @@ extension NSObject {
         }
     }
     
-    fileprivate func getAllVariableName(_ cls:AnyClass) -> [String] {
-        
+    fileprivate func getAllVariableName(_ cls: AnyClass) -> [String] {
+
         let count = UnsafeMutablePointer<UInt32>.allocate(capacity: 0)
         let properties = class_copyPropertyList(cls, count)
         
@@ -118,60 +119,50 @@ extension NSObject {
 extension NSObject {
     /// warp of the judgeAlive api
     func isAlive() -> Bool {
-        return self.judgeAlive()
+        return judgeAlive()
     }
     
     /// labeled the object is alive
     func makeAlive() -> Bool {
         //agent mask be nil
-        if self.agent != nil {
+        if agent != nil {
             return false
         }
         //not check system class
-        if self.isSystemClass(self.classForCoder) {
+        if isSystemClass(classForCoder) {
             return false
         }
         //view object needs a super view ti be alive 
-        if self.isKind(of: UIView.classForCoder()) {
-            let v: UIView = self as! UIView
-            if v.superview == nil {
+        if isKind(of: UIView.classForCoder()) {
+            let v: UIView? = self as? UIView
+            if v?.superview == nil {
                 return false
             }
         }
         //view controller need in the navigation or presenting
-        if self.isKind(of: UIViewController.classForCoder()) {
-            let vc: UIViewController = self as! UIViewController
-            if vc.navigationController == nil && vc.presentingViewController == nil {
+        if isKind(of: UIViewController.classForCoder()) {
+            let vc: UIViewController? = self as? UIViewController
+            if vc?.navigationController == nil && vc?.presentingViewController == nil {
                 return false
             }
         }
-        self.agent = ObjectAgent(object: self)
+        agent = ObjectAgent(object: self)
         return true
     }
 
     /// judeg the specified class is one of the system class
-    func isSystemClass(_ clazz:AnyClass?) -> Bool {
-        
-        guard let clazz = clazz else {
-            return false
-        }
-        
+    func isSystemClass(_ clazz: AnyClass?) -> Bool {
+
+        guard let clazz = clazz else { return false }
+
         let bundle = Bundle(for: clazz)
         
-        guard bundle.bundlePath.hasSuffix("/usr/lib") == false else {
-            return true
-        }
-        
+        guard !bundle.bundlePath.hasSuffix("/usr/lib") else { return true }
+
         //need below /usr/lib check, because "/usr/lib" bundle also has no bundleIdentifier
-        guard let bundleIdentifier = bundle.bundleIdentifier else {
-            return false
-        }
-        
-        if bundleIdentifier.hasPrefix("com.apple."){
-            return true
-        }else {
-            return false
-        }
+        guard let bundleIdentifier = bundle.bundleIdentifier else { return false }
+
+        return bundleIdentifier.hasPrefix("com.apple.")
     }
     
 }

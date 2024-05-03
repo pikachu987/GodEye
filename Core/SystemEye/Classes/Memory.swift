@@ -25,16 +25,13 @@ open class Memory: NSObject {
         var info = mach_task_basic_info()
         var count = mach_msg_type_number_t(MemoryLayout.size(ofValue: info) / MemoryLayout<integer_t>.size)
         let kerr = withUnsafeMutablePointer(to: &info) {
-            return $0.withMemoryRebound(to: integer_t.self, capacity: Int(count)) {
-                return task_info(mach_task_self_,task_flavor_t(MACH_TASK_BASIC_INFO),$0,&count
-                )
+            $0.withMemoryRebound(to: integer_t.self, capacity: Int(count)) {
+                task_info(mach_task_self_, task_flavor_t(MACH_TASK_BASIC_INFO), $0, &count)
             }
         }
-        guard kerr == KERN_SUCCESS else {
-            return (0,self.totalBytes)
-        }
-        
-        return (Double(info.resident_size),self.totalBytes)
+        guard kerr == KERN_SUCCESS else { return (0, totalBytes) }
+
+        return (Double(info.resident_size), totalBytes)
     }
     
     /// Memory usage of system
@@ -44,8 +41,7 @@ open class Memory: NSObject {
                                      wired: Double,
                                 compressed: Double,
                                      total: Double) {
-        let statistics = self.VMStatistics64()
-        
+        let statistics = VMStatistics64()
         
         let free = Double(statistics.free_count) * PAGE_SIZE
         let active = Double(statistics.active_count) * PAGE_SIZE
@@ -53,7 +49,7 @@ open class Memory: NSObject {
         let wired = Double(statistics.wire_count) * PAGE_SIZE
         let compressed = Double(statistics.compressor_page_count) * PAGE_SIZE
         
-        return (free,active,inactive,wired,compressed,self.totalBytes)
+        return (free,active,inactive,wired,compressed, totalBytes)
     }
     
     //--------------------------------------------------------------------------

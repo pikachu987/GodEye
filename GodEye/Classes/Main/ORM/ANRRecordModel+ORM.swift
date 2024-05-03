@@ -10,47 +10,42 @@ import Foundation
 import SQLite
 
 extension ANRRecordModel: RecordORMProtocol {
-    
-    static var type:RecordType {
-        return RecordType.anr
-    }
-    
+    static var type: RecordType { .anr }
+
     func mappingToRelation() -> [Setter] {
-        return [ANRRecordModel.col.threshold <- self.threshold,
-                ANRRecordModel.col.mainThreadBacktrace <- self.mainThreadBacktrace,
-                ANRRecordModel.col.allThreadBacktrace <- self.allThreadBacktrace]
+        [ANRRecordModel.col.threshold <- threshold,
+         ANRRecordModel.col.mainThreadBacktrace <- mainThreadBacktrace,
+         ANRRecordModel.col.allThreadBacktrace <- allThreadBacktrace]
     }
     
     static func mappingToObject(with row: Row) -> ANRRecordModel {
-        return ANRRecordModel(threshold: row[ANRRecordModel.col.threshold],
-                              mainThreadBacktrace: row[ANRRecordModel.col.mainThreadBacktrace],
-                              allThreadBacktrace: row[ANRRecordModel.col.allThreadBacktrace])
+        ANRRecordModel(threshold: row[ANRRecordModel.col.threshold],
+                       mainThreadBacktrace: row[ANRRecordModel.col.mainThreadBacktrace],
+                       allThreadBacktrace: row[ANRRecordModel.col.allThreadBacktrace])
     }
     
-    static func configure(tableBuilder:TableBuilder) {
+    static func configure(tableBuilder: TableBuilder) {
         tableBuilder.column(ANRRecordModel.col.threshold)
         tableBuilder.column(ANRRecordModel.col.mainThreadBacktrace)
         tableBuilder.column(ANRRecordModel.col.allThreadBacktrace)
     }
     
-    static func configure(select table:Table) -> Table {
-        return table.select(ANRRecordModel.col.threshold,
-                            ANRRecordModel.col.mainThreadBacktrace,
-                            ANRRecordModel.col.allThreadBacktrace)
+    static func configure(select table: Table) -> Table {
+        table.select(ANRRecordModel.col.threshold,
+                     ANRRecordModel.col.mainThreadBacktrace,
+                     ANRRecordModel.col.allThreadBacktrace)
     }
     
-    
-    
     static func prepare(sequence: AnySequence<Row>) -> [ANRRecordModel] {
-        return sequence.map { (row:Row) -> ANRRecordModel in
-            return ANRRecordModel(threshold: row[ANRRecordModel.col.threshold],
-                                  mainThreadBacktrace: row[ANRRecordModel.col.mainThreadBacktrace],
-                                  allThreadBacktrace: row[ANRRecordModel.col.allThreadBacktrace])
+        sequence.map { row -> ANRRecordModel in
+            ANRRecordModel(threshold: row[ANRRecordModel.col.threshold],
+                           mainThreadBacktrace: row[ANRRecordModel.col.mainThreadBacktrace],
+                           allThreadBacktrace: row[ANRRecordModel.col.allThreadBacktrace])
         }
     }
     
-    func attributeString() -> NSAttributedString {
-        return ANRRecordViewModel(self).attributeString()
+    func attributeString(type: RecordORMAttributedType) -> NSAttributedString {
+        ANRRecordViewModel(self).attributeString(type: type)
     }
     
     class col: NSObject {

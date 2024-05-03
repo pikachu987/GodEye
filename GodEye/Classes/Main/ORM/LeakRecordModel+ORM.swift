@@ -10,19 +10,16 @@ import Foundation
 import SQLite
 
 extension LeakRecordModel: RecordORMProtocol {
-    
-    static var type: RecordType {
-        return RecordType.leak
-    }
-    
+    static var type: RecordType { .leak }
+
     func mappingToRelation() -> [Setter] {
-        return [LeakRecordModel.col.clazz <- self.clazz,
-                LeakRecordModel.col.address <- self.address]
+        [LeakRecordModel.col.clazz <- clazz,
+         LeakRecordModel.col.address <- address]
     }
     
     static func mappingToObject(with row: Row) -> LeakRecordModel {
-        return LeakRecordModel(clazz: row[LeakRecordModel.col.clazz],
-                               address: row[LeakRecordModel.col.address])
+        LeakRecordModel(clazz: row[LeakRecordModel.col.clazz],
+                        address: row[LeakRecordModel.col.address])
     }
     
     static func configure(tableBuilder: TableBuilder) {
@@ -30,13 +27,13 @@ extension LeakRecordModel: RecordORMProtocol {
         tableBuilder.column(LeakRecordModel.col.address)
     }
     
-    static func configure(select table:Table) -> Table {
-        return table.select(LeakRecordModel.col.clazz,
-                            LeakRecordModel.col.address)
+    static func configure(select table: Table) -> Table {
+        table.select(LeakRecordModel.col.clazz,
+                     LeakRecordModel.col.address)
     }
     
-    func attributeString() -> NSAttributedString {
-        return LeakRecordViewModel(self).attributeString()
+    func attributeString(type: RecordORMAttributedType) -> NSAttributedString {
+        LeakRecordViewModel(self).attributeString(type: type)
     }
     
     class col: NSObject {

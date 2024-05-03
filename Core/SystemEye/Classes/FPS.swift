@@ -9,7 +9,7 @@
 import Foundation
 
 @objc public protocol FPSDelegate: class {
-    @objc optional func fps(fps:FPS, currentFPS:Double)
+    @objc optional func fps(_ sender: FPS, fps: Double)
 }
 
 open class FPS: NSObject {
@@ -19,76 +19,66 @@ open class FPS: NSObject {
     open var updateInterval: Double = 1.0
     
     open weak var delegate: FPSDelegate?
-    
+
+    open var isOpen: Bool {
+        !displayLink.isPaused
+    }
+
     public override init() {
         super.init()
         
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(FPS.applicationWillResignActiveNotification),
+                                               selector: #selector(applicationWillResignActiveNotification),
                                                name: UIApplication.willResignActiveNotification,
                                                object: nil)
         
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(FPS.applicationDidBecomeActiveNotification),
+                                               selector: #selector(applicationDidBecomeActiveNotification),
                                                name: UIApplication.didBecomeActiveNotification,
                                                object: nil)
     }
     
     open func open() {
-        guard self.isEnable == true else {
-            return
-        }
-        self.displayLink.isPaused = false
+        guard isEnable else { return }
+        displayLink.isPaused = false
     }
     
     open func close() {
-        guard self.isEnable == true else {
-            return
-        }
-        
-        self.displayLink.isPaused = true
+        guard isEnable else { return }
+        displayLink.isPaused = true
     }
     
     
     @objc private func applicationWillResignActiveNotification() {
-        guard self.isEnable == true else {
-            return
-        }
-        
-        self.displayLink.isPaused = true
+        guard isEnable else { return }
+        displayLink.isPaused = true
     }
     
     @objc private func applicationDidBecomeActiveNotification() {
-        guard self.isEnable == true else {
-            return
-        }
-        self.displayLink.isPaused = false
+        guard isEnable else { return }
+        displayLink.isPaused = false
     }
     
     @objc private func displayLinkHandler() {
-        self.count += self.displayLink.frameInterval
-        let interval = self.displayLink.timestamp - self.lastTime
+        count += displayLink.frameInterval
+        let interval = displayLink.timestamp - lastTime
         
-        guard interval >= self.updateInterval else {
-            return
-        }
-        
-        self.lastTime = self.displayLink.timestamp
-        let fps = Double(self.count) / interval
-        self.count = 0
+        guard interval >= updateInterval else { return }
+
+        lastTime = displayLink.timestamp
+        let fps = Double(count) / interval
+        count = 0
        
-        self.delegate?.fps?(fps: self, currentFPS: round(fps))
-        
+        delegate?.fps?(self, fps: round(fps))
+
     }
     
-    private lazy var displayLink:CADisplayLink = { [unowned self] in
-        let new = CADisplayLink(target: self, selector: #selector(FPS.displayLinkHandler))
-        new.isPaused = true
-        new.add(to: RunLoop.main, forMode: RunLoop.Mode.common)
-        return new
-    }()
-    
-    private var count:Int = 0
-    
+    private lazy var displayLink: CADisplayLink = {
+        $0.isPaused = true
+        $0.add(to: RunLoop.main, forMode: RunLoop.Mode.common)
+        return $0
+    }(CADisplayLink(target: self, selector: #selector(displayLinkHandler)))
+
+    private var count: Int = 0
     private var lastTime: CFTimeInterval = 0.0
 }

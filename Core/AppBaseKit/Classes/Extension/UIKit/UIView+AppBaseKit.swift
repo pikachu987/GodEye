@@ -17,12 +17,12 @@ extension UIView {
      - returns: retun true if find and resign first responder, otherwise return false
      */
     public func findAndResignFirstResponder() -> Bool {
-        if self.isFirstResponder {
-            self.resignFirstResponder()
+        if isFirstResponder {
+            resignFirstResponder()
             return true
         }
         
-        for subview in self.subviews {
+        for subview in subviews {
             if subview.findAndResignFirstResponder() {
                 return true
             }

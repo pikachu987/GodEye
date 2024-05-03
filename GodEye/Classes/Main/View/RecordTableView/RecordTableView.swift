@@ -8,163 +8,262 @@
 
 import Foundation
 
-class RecordTableView: UITableView {
-    
+final class RecordTableView: UITableView {
+    private var timer: Timer?
+    private var needScrollToBottom = false
+
+    private var isUserInteraction = false
+    private var dummyContentSize = CGSize.zero
+
+    var isAutoFirstScrollBottom = false
+
+    override var contentSize: CGSize {
+        didSet {
+            guard dummyContentSize != contentSize, !isUserInteraction, isAutoFirstScrollBottom else { return }
+            dummyContentSize = contentSize
+            scrollToBottom(animated: false)
+        }
+    }
+
     override init(frame: CGRect, style: UITableView.Style) {
         super.init(frame: frame, style: style)
-        self.separatorStyle = .none
-        self.backgroundColor = UIColor.niceBlack()
+
+        separatorStyle = .none
+        backgroundColor = .niceBlack
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func smoothReloadData(need scrollToBottom: Bool) {
-        self.timer?.invalidate()
-        self.timer = nil
-        self.needScrollToBottom = false
-        
-        self.timer = Timer.scheduledTimer(timeInterval: 0.5,
-                                          target: self,
-                                          selector: #selector(RecordTableView.reloadData),
-                                          userInfo: nil,
-                                          repeats: false)
-    }
-    
     override func reloadData() {
         super.reloadData()
         
-        if self.needScrollToBottom == true {
-            DispatchQueue.main.async {
-                self.scrollToBottom(animated: true)
+        if needScrollToBottom {
+            DispatchQueue.main.async { [weak self] in
+                self?.scrollToBottom(animated: true)
             }
         }
     }
-    
-    func scrollToBottom(animated: Bool) {
-        let point = CGPoint(x: 0, y: max(self.contentSize.height + self.contentInset.bottom - self.bounds.size.height, 0))
-        self.setContentOffset(point, animated: animated)
+
+    func didScroll(_ isDidScroll: Bool) {
+        if isDidScroll {
+            isUserInteraction = true
+        }
     }
-    
-    private var timer: Timer?
-    
-    private var needScrollToBottom = false
+
+    func didUserInteraction() {
+        isUserInteraction = true
+    }
+
+    func smoothReloadData(need scrollToBottom: Bool, timeInterval: TimeInterval = 0.5) {
+        timer?.invalidate()
+        timer = nil
+        needScrollToBottom = false
+
+        timer = Timer.scheduledTimer(timeInterval: timeInterval,
+                                          target: self,
+                                          selector: #selector(reloadData),
+                                          userInfo: nil,
+                                          repeats: false)
+    }
+
+    func scrollToBottom(animated: Bool) {
+        let point = CGPoint(x: 0, y: max(contentSize.height + contentInset.bottom - bounds.size.height, 0))
+        setContentOffset(point, animated: animated)
+    }
 }
 
-class RecordTableViewDataSource: NSObject {
+final class RecordTableViewDataSource: NSObject {
     private let maxLogItems: Int = 1000
-    
-    fileprivate(set) var recordData: [RecordORMProtocol]!
-    
+
+    fileprivate let type: RecordType
+    fileprivate(set) var recordData: [RecordORMProtocol]?
+
     private var logIndex: Int = 0
-    fileprivate var type: RecordType!
-    init(type:RecordType) {
-        super.init()
+
+    var shareText: ((IndexPath) -> Void)?
+
+    var didUserInteracter: (() -> Void)?
+    var isDidScrollHandler: ((Bool) -> Void)?
+    var didMoreTap: ((RecordTableViewCell) -> Void)?
+    var didTap: ((RecordTableViewCell) -> Void)?
+    var didPreview: ((RecordORMProtocol) -> Void)?
+    var previewProvider: ((RecordORMProtocol) -> UIViewController)?
+
+    private var scrollTimer: Timer?
+    private var isDidScrollDummy: Bool = false
+    private var isDidScroll: Bool = false {
+        didSet {
+            guard isDidScrollDummy != isDidScroll else { return }
+            isDidScrollDummy = isDidScroll
+            scrollTimer?.invalidate()
+            scrollTimer = nil
+            if !isDidScrollDummy {
+                scrollTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: false, block: { [weak self] _ in
+                    guard let self = self else { return }
+                    self.scrollTimer?.invalidate()
+                    self.scrollTimer = nil
+                    self.isDidScrollHandler?(self.isDidScroll)
+                })
+            }
+        }
+    }
+
+    init(type: RecordType) {
         self.type = type
-        
-        self.type.model()?.addCount = 0
-        self.recordData = self.currentPageModel()
+        super.init()
+
+        recordData = currentPageModel()
+        type.model()?.addCount = 0
     }
     
     private func currentPageModel() -> [RecordORMProtocol]? {
-        if self.type == RecordType.log {
-            return LogRecordModel.select(at: self.logIndex)
-        }else if self.type == RecordType.crash {
-            return CrashRecordModel.select(at: self.logIndex)
-        }else if self.type == .network {
-            return NetworkRecordModel.select(at: self.logIndex)
-        }else if self.type == .anr {
-            return ANRRecordModel.select(at: self.logIndex)
-        }else if self.type == .command {
-            return CommandRecordModel.select(at: self.logIndex)
-        }else if self.type == .leak {
-            return LeakRecordModel.select(at: self.logIndex)
+        switch type {
+        case .log: return LogRecordModel.select(at: logIndex)
+        case .crash: return CrashRecordModel.select(at: logIndex)
+        case .network: return NetworkRecordModel.select(at: logIndex)
+        case .anr: return ANRRecordModel.select(at: logIndex)
+        case .leak: return LeakRecordModel.select(at: logIndex)
+        case .command: return CommandRecordModel.select(at: logIndex)
         }
-        
-        fatalError("type:\(self.type) not define the database")
     }
     
     private func addCount() {
-        self.type.model()?.addCount += 1
+        type.model()?.addCount += 1
     }
     
     func loadPrePage() -> Bool {
-        self.logIndex += 1
+        logIndex += 1
         
-        guard let models = self.currentPageModel() else {
-            return false
-        }
-        
-        guard models.count != 0 else {
-            return false
-        }
-        
+        guard let models = currentPageModel() else { return false }
+        guard models.count != 0 else { return false }
+
         for model in models.reversed() {
-            self.recordData.insert(model, at: 0)
+            recordData?.insert(model, at: 0)
         }
         return true
     }
     
     func addRecord(model:RecordORMProtocol) {
-        
-        if self.recordData.count != 0 &&
-            Swift.type(of: model).type != self.type {
+        if recordData?.count != 0 &&
+            Swift.type(of: model).type != type {
             return
         }
         
-        self.recordData.append(model)
-        if self.recordData.count > self.maxLogItems {
-            self.recordData.remove(at: 0)
+        recordData?.append(model)
+        if let recordData = recordData, recordData.count > maxLogItems {
+            self.recordData?.remove(at: 0)
         }
-        self.addCount()
+        addCount()
     }
     
     func cleanRecord() {
-        self.recordData.removeAll()
+        recordData?.removeAll()
     }
 }
 
 extension RecordTableViewDataSource: UITableViewDataSource, UITableViewDelegate {
-    
+    func scrollViewShouldScrollToTop(_ scrollView: UIScrollView) -> Bool {
+        didUserInteracter?()
+        return true
+    }
+
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        if !isDidScroll {
+            isDidScrollHandler?(true)
+        }
+        isDidScroll = true
+    }
+
+    func scrollViewWillBeginDecelerating(_ scrollView: UIScrollView) {
+        isDidScroll = true
+    }
+
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        isDidScroll = false
+    }
+
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        isDidScroll = false
+    }
+
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        guard let recordData = recordData, recordData.indices ~= indexPath.row else { return false }
+        return shareText != nil
+    }
+
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        guard let recordData = recordData, recordData.indices ~= indexPath.row else { return nil }
+        let share = UIContextualAction(style: .normal, title: "Share") { [weak self] (action, sourceView, completionHandler) in
+            completionHandler(true)
+            guard let self = self else { return }
+            self.shareText?(indexPath)
+        }
+        let swipeActionConfig = UISwipeActionsConfiguration(actions: [share])
+        swipeActionConfig.performsFirstActionWithFullSwipe = false
+        return swipeActionConfig
+    }
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.recordData.count
+        recordData?.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        return tableView.dequeueReusableCell({ (cell:RecordTableViewCell) in
-            
-        })
+        tableView.dequeueReusableCell({ (cell: RecordTableViewCell) in })
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        guard let recordData = recordData, recordData.indices ~= indexPath.row else { return }
+        let model = recordData[indexPath.row]
         let cell = cell as? RecordTableViewCell
-        
-        let attributeString = self.recordData[indexPath.row].attributeString()
-        cell?.configure(attributeString)
+        let attributeString = model.attributeString(type: .preview)
+        cell?.bind(attributeString)
+        cell?.delegate = self
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        let tableView = tableView as! RecordTableView
-        
+        guard let recordData = recordData, recordData.indices ~= indexPath.row, let tableView = tableView as? RecordTableView else { return 0 }
         let width = tableView.bounds.size.width - 10
-        let attributeString = self.recordData[indexPath.row].attributeString()
+        let model = recordData[indexPath.row]
+        let attributeString = model.attributeString(type: .preview)
         return RecordTableViewCell.boundingHeight(with: width, attributedText: attributeString)
     }
     
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-        if self.type == .network || self.type == .anr {
+        if type == .network || type == .anr {
             return indexPath
-        }else {
+        } else {
             return nil
         }
     }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let model = self.recordData[indexPath.row]
-        model.showAll = !model.showAll
-        tableView.reloadData()
+
+    func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        guard let recordData = recordData, recordData.indices ~= indexPath.row else { return nil }
+        let model = recordData[indexPath.row]
+        guard model.isPreview else { return nil }
+        let previewProvider: (() -> UIViewController?) = { [weak self] in
+            self?.didUserInteracter?()
+            return self?.previewProvider?(model)
+        }
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: previewProvider) { suggestedActions in
+            let inspectAction = UIAction(title: NSLocalizedString("View", comment: ""), image: nil) { [weak self] action in
+                self?.didUserInteracter?()
+                self?.didPreview?(model)
+            }
+            return UIMenu(title: "", children: [inspectAction])
+        }
     }
 }
 
+extension RecordTableViewDataSource: RecordTableViewCellDelete {
+    func recordTableViewCellTapped(_ sender: RecordTableViewCell) {
+        didUserInteracter?()
+        didTap?(sender)
+    }
+
+    func recordTableViewCellMoreTapped(_ sender: RecordTableViewCell) {
+        didUserInteracter?()
+        didMoreTap?(sender)
+    }
+}

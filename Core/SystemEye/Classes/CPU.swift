@@ -21,7 +21,7 @@ open class CPU: NSObject {
     /// Number of physical cores on this machine.
     public static var physicalCores: Int {
         get {
-            return Int(System.hostBasicInfo.physical_cpu)
+            Int(System.hostBasicInfo.physical_cpu)
         }
     }
     
@@ -29,7 +29,7 @@ open class CPU: NSObject {
     /// unless it has hyper-threading, in which case it will be double.
     public static var logicalCores: Int {
         get {
-            return Int(System.hostBasicInfo.logical_cpu)
+            Int(System.hostBasicInfo.logical_cpu)
         }
     }
     
@@ -43,7 +43,7 @@ open class CPU: NSObject {
                                          user: Double,
                                          idle: Double,
                                          nice: Double) {
-        let load = self.hostCPULoadInfo
+        let load = hostCPULoadInfo
         
         let userDiff = Double(load.cpu_ticks.0 - loadPrevious.cpu_ticks.0)
         let sysDiff  = Double(load.cpu_ticks.1 - loadPrevious.cpu_ticks.1)
@@ -65,11 +65,11 @@ open class CPU: NSObject {
     
     /// Get CPU usage of application,get from all thread
     public class func applicationUsage() -> Double {
-        let threads = self.threadBasicInfos()
-        var result : Double = 0.0
+        let threads = threadBasicInfos()
+        var result: Double = 0
         threads.forEach { (thread:thread_basic_info) in
-            if self.flag(thread) {
-                result += Double.init(thread.cpu_usage) / Double.init(TH_USAGE_SCALE);
+            if flag(thread) {
+                result += Double.init(thread.cpu_usage) / Double.init(TH_USAGE_SCALE)
             }
         }
         return result * 100
@@ -121,20 +121,15 @@ open class CPU: NSObject {
         
         let result = task_threads(mach_task_self_, &(threads_array), &count)
         
-        guard result == KERN_SUCCESS else {
-            return threads_act
-        }
-        
-        guard let array = threads_array  else {
-            return threads_act
-        }
-        
+        guard result == KERN_SUCCESS else { return threads_act }
+        guard let array = threads_array  else { return threads_act }
+
         for i in 0..<count {
             threads_act.append(array[Int(i)])
         }
         
         let krsize = count * UInt32.init(MemoryLayout<thread_t>.size)
-        let kr = vm_deallocate(mach_task_self_, vm_address_t(array.pointee), vm_size_t(krsize));
+        let kr = vm_deallocate(mach_task_self_, vm_address_t(array.pointee), vm_size_t(krsize))
         return threads_act
     }
     
@@ -145,18 +140,18 @@ open class CPU: NSObject {
         var thread_info_count = UnsafeMutablePointer<mach_msg_type_number_t>.allocate(capacity: 128)
         var basic_info_th: thread_basic_info_t? = nil
         
-        for act_t in self.threadActPointers() {
-            thread_info_count.pointee = UInt32(THREAD_INFO_MAX);
-            let kr = thread_info(act_t ,thread_flavor_t(THREAD_BASIC_INFO),thinfo, thread_info_count);
+        for act_t in threadActPointers() {
+            thread_info_count.pointee = UInt32(THREAD_INFO_MAX)
+            let kr = thread_info(act_t ,thread_flavor_t(THREAD_BASIC_INFO),thinfo, thread_info_count)
             if (kr != KERN_SUCCESS) {
-                return [thread_basic_info]();
+                return [thread_basic_info]()
             }
             basic_info_th = withUnsafePointer(to: &thinfo.pointee, { (ptr) -> thread_basic_info_t in
                 let int8Ptr = unsafeBitCast(ptr, to: thread_basic_info_t.self)
                 return int8Ptr
             })
-            if basic_info_th != nil {
-                result.append(basic_info_th!.pointee)
+            if let basic_info_th = basic_info_th {
+                result.append(basic_info_th.pointee)
             }
         }
         
@@ -170,18 +165,18 @@ open class CPU: NSObject {
         var thread_info_count = UnsafeMutablePointer<mach_msg_type_number_t>.allocate(capacity: 128)
         var identifier_info_th: thread_identifier_info_t? = nil
         
-        for act_t in self.threadActPointers() {
-            thread_info_count.pointee = UInt32(THREAD_INFO_MAX);
-            let kr = thread_info(act_t ,thread_flavor_t(THREAD_IDENTIFIER_INFO),thinfo, thread_info_count);
+        for act_t in threadActPointers() {
+            thread_info_count.pointee = UInt32(THREAD_INFO_MAX)
+            let kr = thread_info(act_t ,thread_flavor_t(THREAD_IDENTIFIER_INFO),thinfo, thread_info_count)
             if (kr != KERN_SUCCESS) {
-                return [thread_identifier_info]();
+                return [thread_identifier_info]()
             }
             identifier_info_th = withUnsafePointer(to: &thinfo.pointee, { (ptr) -> thread_identifier_info_t in
                 let int8Ptr = unsafeBitCast(ptr, to: thread_identifier_info_t.self)
                 return int8Ptr
             })
-            if identifier_info_th != nil {
-                result.append(identifier_info_th!.pointee)
+            if let identifier_info_th = identifier_info_th {
+                result.append(identifier_info_th.pointee)
             }
         }
         return result

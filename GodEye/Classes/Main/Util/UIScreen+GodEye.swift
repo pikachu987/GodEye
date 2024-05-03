@@ -10,18 +10,18 @@ import Foundation
 
 extension UIScreen {
     class func onscreenFrame() -> CGRect {
-        return self.main.applicationFrame
+        main.applicationFrame
     }
     
     class func offscreenFrame() -> CGRect {
-        var frame = self.onscreenFrame()
+        var frame = onscreenFrame()
         switch UIApplication.shared.statusBarOrientation {
         case .portraitUpsideDown:
             frame.origin.y = -frame.size.height
         case .landscapeLeft:
             frame.origin.x = frame.size.width
         case .landscapeRight:
-            frame.origin.x = -frame.size.width;
+            frame.origin.x = -frame.size.width
         default:
             frame.origin.y = frame.size.height
         }

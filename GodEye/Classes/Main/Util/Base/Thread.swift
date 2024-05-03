@@ -9,12 +9,11 @@
 import Foundation
 
 extension Thread {
-    
     var threadName: String {
         get {
-            if self.isMainThread {
+            if isMainThread {
                 return "Main"
-            } else if let name = self.name, !name.isEmpty {
+            } else if let name = name, !name.isEmpty {
                 return name
             } else {
                 return String(format:"%p", self)

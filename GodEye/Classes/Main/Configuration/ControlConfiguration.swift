@@ -45,9 +45,9 @@ open class ControlConfiguration: NSObject {
     /// - Returns: touches
     func touchesToShow() -> Int {
         #if (arch(i386) || arch(x86_64)) && os(iOS)
-            return self.touchesShowForSimulator
+            return touchesShowForSimulator
         #else
-            return self.touchesShowForDevice
+            return touchesShowForDevice
         #endif
     }
     
@@ -57,9 +57,9 @@ open class ControlConfiguration: NSObject {
     /// - Returns: can shake to show
     func shakeToShow() -> Bool {
         #if (arch(i386) || arch(x86_64)) && os(iOS)
-            return self.shakeShowForSimulator
+            return shakeShowForSimulator
         #else
-            return self.shakeShowForDevice
+            return shakeShowForDevice
         #endif
     }
 }

@@ -12,7 +12,7 @@ import Foundation
 // MARK: - LeakEyeDelegate
 //--------------------------------------------------------------------------
 @objc public protocol LeakEyeDelegate: NSObjectProtocol {
-   @objc optional func leakEye(_ leakEye:LeakEye,didCatchLeak object:NSObject)
+   @objc optional func leakEye(_ leakEye: LeakEye, didCatchLeak object: NSObject)
 }
 
 //--------------------------------------------------------------------------
@@ -27,7 +27,7 @@ open class LeakEye: NSObject {
     
     open var isOpening: Bool {
         get {
-            return self.timer?.isValid ?? false
+            timer?.isValid ?? false
         }
     }
     //--------------------------------------------------------------------------
@@ -35,7 +35,7 @@ open class LeakEye: NSObject {
     //--------------------------------------------------------------------------
     public override init() {
         super.init()
-        NotificationCenter.default.addObserver(self, selector: #selector(LeakEye.receive), name: NSNotification.Name.receive, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(receive), name: NSNotification.Name.receive, object: nil)
     }
     
     //--------------------------------------------------------------------------
@@ -43,12 +43,12 @@ open class LeakEye: NSObject {
     //--------------------------------------------------------------------------
     open func open() {
         Preparer.binding()
-        self.startPingTimer()
+        startPingTimer()
     }
     
     open func close() {
-        self.timer?.invalidate()
-        self.timer = nil
+        timer?.invalidate()
+        timer = nil
     }
     
     private func startPingTimer() {
@@ -58,14 +58,14 @@ open class LeakEye: NSObject {
                 return
             }
         }
-        self.close()
-        
-        self.timer = Timer.scheduledTimer(timeInterval: 0.5,
-                                          target: self,
-                                          selector: #selector(LeakEye.scan),
-                                          userInfo: nil,
-                                          repeats: true)
-        
+        close()
+
+        timer = Timer.scheduledTimer(timeInterval: 0.5,
+                                     target: self,
+                                     selector: #selector(scan),
+                                     userInfo: nil,
+                                     repeats: true)
+
     }
     
     //--------------------------------------------------------------------------
@@ -75,11 +75,11 @@ open class LeakEye: NSObject {
         NotificationCenter.default.post(name: NSNotification.Name.scan, object: nil)
     }
     
-    @objc private func receive(notif:NSNotification) {
+    @objc private func receive(notif: NSNotification) {
         guard let leakObj = notif.object as? NSObject else {
             return
         }
-        self.delegate?.leakEye?(self, didCatchLeak: leakObj)
+        delegate?.leakEye?(self, didCatchLeak: leakObj)
     }
     
     //--------------------------------------------------------------------------

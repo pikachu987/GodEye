@@ -20,27 +20,27 @@ open class ASLEye: NSObject {
     
     open var isOpening: Bool {
         get {
-            return self.timer?.isValid ?? false
+            timer?.isValid ?? false
         }
     }
     
-    open func open(with interval:TimeInterval) {
-        self.timer = Timer.scheduledTimer(timeInterval: interval,
+    open func open(with interval: TimeInterval) {
+        timer = Timer.scheduledTimer(timeInterval: interval,
                                           target: self,
-                                          selector: #selector(ASLEye.pollingLogs),
+                                          selector: #selector(pollingLogs),
                                           userInfo: nil,
                                           repeats: true)
     }
     
     open func close() {
-        self.timer?.invalidate()
-        self.timer = nil
+        timer?.invalidate()
+        timer = nil
         
     }
     
     
     @objc fileprivate func pollingLogs() {
-        self.queue.async {
+        queue.async {
             let logs = self.retrieveLogs()
             if logs.count > 0 {
                 DispatchQueue.main.async {
@@ -53,17 +53,17 @@ open class ASLEye: NSObject {
     fileprivate func retrieveLogs() -> [String] {
         var logs = [String]()
         
-        let query: aslmsg = self.initQuery()
-        
+        guard let query: aslmsg = initQuery() else { return [] }
+
         let response: aslresponse? = asl_search(nil, query)
-        guard response != nil else {
-            return logs
-        }
-        
+        guard response != nil else { return logs }
+
         var message = asl_next(response)
         while (message != nil) {
-            let log = self.parserLog(from: message!)
-            logs.append(log)
+            if let messageDummy = message {
+                let log = parserLog(from: messageDummy)
+                logs.append(log)
+            }
             
             message = asl_next(response)
         }
@@ -73,40 +73,38 @@ open class ASLEye: NSObject {
         return logs
     }
     
-    fileprivate func parserLog(from message:aslmsg) ->String {
-        let content = asl_get(message, ASL_KEY_MSG)!;
-        let msg_id = asl_get(message, ASL_KEY_MSG_ID);
+    fileprivate func parserLog(from message: aslmsg) -> String {
+        guard let content = asl_get(message, ASL_KEY_MSG) else { return "" }
+        let msg_id = asl_get(message, ASL_KEY_MSG_ID)
         
-        let m = atoi(msg_id);
+        let m = atoi(msg_id)
         if (m != 0) {
-            self.lastMessageID = m;
+            lastMessageID = m
         }
         
-        return String(cString: content, encoding: String.Encoding.utf8)!
+        return String(cString: content, encoding: String.Encoding.utf8) ?? ""
     }
     
-    fileprivate func initQuery() -> aslmsg {
+    fileprivate func initQuery() -> aslmsg? {
         let query: aslmsg = asl_new(UInt32(ASL_TYPE_QUERY))
         //set BundleIdentifier to ASL_KEY_FACILITY
-        let bundleIdentifier = (Bundle.main.bundleIdentifier! as NSString).utf8String
+        guard let identifier = Bundle.main.bundleIdentifier else { return nil }
+        let bundleIdentifier = (identifier as NSString).utf8String
         asl_set_query(query, ASL_KEY_FACILITY, bundleIdentifier, UInt32(ASL_QUERY_OP_EQUAL))
         
         //set pid to ASL_KEY_PID
         let pid = NSString(format: "%d", getpid()).cString(using: String.Encoding.utf8.rawValue)
         asl_set_query(query, ASL_KEY_PID, pid, UInt32(ASL_QUERY_OP_NUMERIC))
         
-        if self.lastMessageID != 0 {
+        if lastMessageID != 0 {
             let m = NSString(format: "%d", self.lastMessageID).utf8String
-            asl_set_query(query, ASL_KEY_MSG_ID, m, UInt32(ASL_QUERY_OP_GREATER | ASL_QUERY_OP_NUMERIC));
+            asl_set_query(query, ASL_KEY_MSG_ID, m, UInt32(ASL_QUERY_OP_GREATER | ASL_QUERY_OP_NUMERIC))
         }
         
         return query
     }
     
     fileprivate var timer: Timer?
-    
     fileprivate var lastMessageID: Int32 = 0
-    
     fileprivate var queue = DispatchQueue(label: "ASLEyeQueue")
-    
 }

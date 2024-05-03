@@ -9,8 +9,9 @@
 import Foundation
 
 open class GodEye: NSObject {
-    
-    open class func makeEye(with window:UIWindow, configuration: Configuration = Configuration()) {
+    static var window: UIWindow?
+
+    open class func makeEye(with window: UIWindow, configuration: Configuration = Configuration()) {
         LogRecordModel.create()
         CrashRecordModel.create()
         NetworkRecordModel.create()
@@ -18,6 +19,23 @@ open class GodEye: NSObject {
         CommandRecordModel.create()
         LeakRecordModel.create()
         
-        window.makeEye(with: configuration)
+        self.window = window
+        self.window?.hook()
+        GodEyeTabBarController.shared.configuration = configuration
+        viewController.show()
     }
+
+    open class func show() {
+        viewController.show()
+    }
+
+    open class func hide() {
+        viewController.hide()
+    }
+}
+
+extension GodEye {
+    private static let viewController: GodEyeViewController = {
+        GodEyeViewController()
+    }()
 }

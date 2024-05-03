@@ -14,15 +14,15 @@ import UIKit
 extension UIApplication {
     
     public func mainWindow() -> UIWindow? {
-        guard let delegate = self.delegate else {
-            return self.keyWindow
+        guard let delegate = delegate else {
+            return keyWindow
         }
         
         guard delegate.responds(to: #selector(getter: UIApplicationDelegate.window)) else {
-            return self.keyWindow
+            return keyWindow
         }
         
-        return delegate.window!
+        return delegate.window?.flatMap { $0 }
     }
 }
 

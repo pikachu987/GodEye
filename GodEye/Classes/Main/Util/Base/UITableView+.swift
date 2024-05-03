@@ -9,13 +9,13 @@
 import Foundation
 
 extension UITableView {
-    func dequeueReusableCell<E: UITableViewCell>(style:UITableViewCell.CellStyle = UITableViewCell.CellStyle.default,
-                             identifier:String = E.identifier(),
-                             _ configure: (E) -> Void) -> E {
-        var cell = self.dequeueReusableCell(withIdentifier: identifier) as? E
+    func dequeueReusableCell<E: UITableViewCell>(style: UITableViewCell.CellStyle = .default,
+                             identifier: String = E.identifier,
+                             _ bind: (E) -> Void) -> E {
+        var cell = dequeueReusableCell(withIdentifier: identifier) as? E
         if cell == nil {
             cell = E(style: style, reuseIdentifier: identifier)
-            configure(cell!)
+            bind(cell!)
         }
         return cell!
     }

@@ -10,11 +10,11 @@ import Foundation
 
 public extension NSObject {
     
-    func perform(closure:@escaping ()->(), afterDelay:TimeInterval) -> Void {
-        
+    func perform(closure: @escaping () -> (), afterDelay: TimeInterval) -> Void {
+
         var canceled = false
         
-        func wrappingClosure(cancel:Bool)->Void {
+        func wrappingClosure(cancel: Bool) -> Void {
             if cancel {
                 canceled = true
                 return

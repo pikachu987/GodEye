@@ -16,7 +16,6 @@ Automaticly display Log,Crash,Network,ANR,Leak,CPU,RAM,FPS,NetFlow,Folder and et
 It's so huge that I split it into several independent components:
 
 * [Log4G] — Simple, lightweight logging framework written in Swift.
-* [AssistiveButton] — Simple Assistive Button.
 * [AppBaseKit] — A handy kit of Swift extensions and wrapped class to boost your productivity.
 * [AppSwizzle] — lightweight and flexible method swizzling wrapped by swift.
 * [LeakEye] — LeakEye is a memory leak monitor.

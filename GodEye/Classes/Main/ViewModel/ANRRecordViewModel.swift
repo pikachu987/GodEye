@@ -8,60 +8,48 @@
 
 import Foundation
 
-class ANRRecordViewModel: BaseRecordViewModel {
-    
-    private(set) var model:ANRRecordModel!
-    
-    init(_ model:ANRRecordModel) {
-        super.init()
-        self.model = model
+class ANRRecordViewModel: BaseRecordViewModel<ANRRecordModel> {
+    init(_ model: ANRRecordModel) {
+        super.init(model: model)
     }
-    
-    func attributeString() -> NSAttributedString {
-        
+
+    override func attributeString(type: RecordORMAttributedType) -> NSAttributedString {
         let result = NSMutableAttributedString()
-        result.append(self.headerString())
-        result.append(self.mainThreadBacktraceString())
-        
-        if self.model.showAll {
-            result.append(self.allThreadBacktraceString())
-        }else {
-            result.append(self.contentString(with: "Click cell to show all", content: "...", newline: false, color: UIColor.cyan))
+        result.append(headerString(type: type))
+
+        if type == .preview {
+            result.append(moreLinkString(with: model.isAllShow ? "Click cell to preview" : "Click cell to show all"))
         }
-        
-        
+        result.append(mainThreadBacktraceString(type: type))
+
+        if (type == .preview && model.isAllShow) || type == .detail {
+            result.append(allThreadBacktraceString(type: type))
+        }
         return result
     }
     
-    private func headerString() -> NSAttributedString {
-        let content = "main thread not response with threshold:\(self.model.threshold!)"
-        return self.headerString(with: "ANR", content: content, color: UIColor(hex: 0xFF0000))
+    private func headerString(type: RecordORMAttributedType) -> NSAttributedString {
+        let content = "main thread not response with threshold:\(model.threshold)"
+        return headerString(with: type, prefix: "ANR", content: content, color: UIColor(hex: 0xFF0000))
     }
-    
-    private func mainThreadBacktraceString() -> NSAttributedString {
-        let result = NSMutableAttributedString(attributedString: self.contentString(with: "MainThread Backtrace", content: self.model.mainThreadBacktrace, newline: true))
-        let  range = result.string.NS.range(of: self.model.mainThreadBacktrace!)
+
+    private func mainThreadBacktraceString(type: RecordORMAttributedType) -> NSAttributedString {
+        guard let mainThreadBacktrace = model.mainThreadBacktrace else { return .init() }
+        let result = NSMutableAttributedString(attributedString: contentString(with: type, prefix: "MainThread Backtrace", content: model.mainThreadBacktrace, newline: true))
+        let range = result.string.NS.range(of: mainThreadBacktrace)
         if range.location != NSNotFound {
-            let att = [NSAttributedString.Key.font:UIFont(name: "Courier", size: 6)!,
-                       NSAttributedString.Key.foregroundColor:UIColor.white] as! [NSAttributedString.Key : Any]
-            result.setAttributes(att, range: range)
-            
+            result.setAttributes(attributes(with: type, fontSize: type.contentDetailFontSize, link: .tap), range: range)
         }
         return result
-        
     }
     
-    private func allThreadBacktraceString() -> NSAttributedString {
-        let result = NSMutableAttributedString(attributedString: self.contentString(with: "AllThread Backtrace", content: self.model.allThreadBacktrace, newline: true))
-        let  range = result.string.NS.range(of: self.model.allThreadBacktrace!)
+    private func allThreadBacktraceString(type: RecordORMAttributedType) -> NSAttributedString {
+        guard let allThreadBacktrace = model.allThreadBacktrace else { return .init() }
+        let result = NSMutableAttributedString(attributedString: contentString(with: type, prefix: "AllThread Backtrace", content: model.allThreadBacktrace, newline: true))
+        let  range = result.string.NS.range(of: allThreadBacktrace)
         if range.location != NSNotFound {
-            let att = [NSAttributedString.Key.font:UIFont(name: "Courier", size: 6)!,
-                       NSAttributedString.Key.foregroundColor:UIColor.white] as! [NSAttributedString.Key : Any]
-            result.setAttributes(att, range: range)
-            
+            result.setAttributes(attributes(with: type, fontSize: type.contentDetailFontSize, link: .tap), range: range)
         }
         return result
-        
     }
-    
 }

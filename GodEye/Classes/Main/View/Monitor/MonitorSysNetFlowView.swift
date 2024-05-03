@@ -6,123 +6,118 @@
 //
 //
 
-import Foundation
+import UIKit
 
-class MonitorSysNetFlowView: UIButton {
-    
-    private(set) var type: MonitorSystemType!
-    
-    init(type:MonitorSystemType) {
-        super.init(frame: CGRect.zero)
+final class MonitorSysNetFlowView: UIButton {
+    private lazy var infoLabel: UILabel = {
+        $0.translatesAutoresizingMaskIntoConstraints = false
+        $0.font = .systemFont(ofSize: 12)
+        $0.textColor = .white
+        $0.text = type.info
+        return $0
+    }(UILabel())
+
+    private lazy var stackView: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: [
+            makeVStackView(subviews: [wifiSendLabel, wifiReceivedLabel]),
+            makeVStackView(subviews: [wwanSendLabel, wwanReceivedLabel])
+        ])
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.axis = .horizontal
+        stackView.spacing = 20
+        stackView.arrangedSubviews[0].widthAnchor.constraint(equalTo: stackView.arrangedSubviews[1].widthAnchor).isActive = true
+        return stackView
+    }()
+
+    private func makeVStackView(subviews: [UIView]) -> UIStackView {
+        let stackView = UIStackView(arrangedSubviews: subviews)
+        stackView.axis = .vertical
+        return stackView
+    }
+
+    private lazy var wifiSendLabel: UILabel = {
+        $0.font = .systemFont(ofSize: 12)
+        $0.textColor = .white
+        $0.textAlignment = .left
+        return $0
+    }(UILabel())
+
+    private lazy var wifiReceivedLabel: UILabel = {
+        $0.font = .systemFont(ofSize: 12)
+        $0.textColor = .white
+        $0.textAlignment = .left
+        return $0
+    }(UILabel())
+
+    private lazy var wwanSendLabel: UILabel = {
+        $0.font = .systemFont(ofSize: 12)
+        $0.textColor = .white
+        $0.textAlignment = .left
+        return $0
+    }(UILabel())
+
+    private lazy var wwanReceivedLabel: UILabel = {
+        $0.font = .systemFont(ofSize: 12)
+        $0.textColor = .white
+        $0.textAlignment = .left
+        return $0
+    }(UILabel())
+
+    let type: MonitorSystemType
+
+    init(type: MonitorSystemType) {
         self.type = type
-        self.infoLabel.text = type.info
-        self.addSubview(self.topLine)
-        self.addSubview(self.infoLabel)
-        self.addSubview(self.wifiSendLabel)
-        self.addSubview(self.wifiReceivedLabel)
-        self.addSubview(self.wwanSendLabel)
-        self.addSubview(self.wwanReceivedLabel)
-        
+        super.init(frame: .zero)
+
+        setupViews()
     }
-    
-    func configure(wifiSend:UInt32,wifiReceived:UInt32,wwanSend:UInt32,wwanReceived:UInt32) {
-        
-        self.wifiSendLabel.attributedText = self.attributedString(prefix: "wifi send:", byte: wifiSend)
-        self.wifiReceivedLabel.attributedText = self.attributedString(prefix: "wifi received:", byte: wifiReceived)
-        self.wwanSendLabel.attributedText = self.attributedString(prefix: "wwan send:", byte: wwanSend)
-        self.wwanReceivedLabel.attributedText = self.attributedString(prefix: "wwan received:", byte: wwanReceived)
-    }
-    
-    private func attributedString(prefix:String,byte:UInt32) -> NSAttributedString {
-        let result = NSMutableAttributedString()
-        let storage = Double(byte).storageCapacity()
-        
-        result.append(NSAttributedString(string: prefix + "  ",
-                                         attributes: [NSAttributedString.Key.font:UIFont.systemFont(ofSize: 10),
-                                                      NSAttributedString.Key.foregroundColor:UIColor.white]))
-        result.append(NSAttributedString(string: String.init(format: "%.1f",storage.capacity),
-                                         attributes: [NSAttributedString.Key.font:UIFont(name: "HelveticaNeue-UltraLight", size: 18),
-                                                      NSAttributedString.Key.foregroundColor:UIColor.white]))
-        result.append(NSAttributedString(string: storage.unit,
-                                         attributes: [NSAttributedString.Key.font:UIFont(name: "HelveticaNeue-UltraLight", size: 12),
-                                                      NSAttributedString.Key.foregroundColor:UIColor.white]))
-        return result
-    }
-    
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        
-        var rect = CGRect.zero
-        rect.origin.x = 20
-        rect.origin.y = 10
-        rect.size.width = self.frame.size.width - 20
-        rect.size.height = 12
-        self.infoLabel.frame = rect
-        
-        rect.origin.x = 20
-        rect.origin.y = 0
-        rect.size.width = self.frame.size.width - rect.origin.x * 2.0
-        rect.size.height = 0.5
-        self.topLine.frame = rect
-        
-        
-        rect = CGRect(x: 30, y: self.infoLabel.frame.maxY + 5, width: self.frame.size.width / 2.0 , height: 21)
-        self.wifiSendLabel.frame = rect
-        
-        rect.origin.y = rect.maxY + 5
-        self.wifiReceivedLabel.frame = rect
-        
-        rect.origin.x = self.frame.size.width / 2.0 + 30
-        self.wwanReceivedLabel.frame = rect
-        
-        rect.origin.y = rect.minY - 5 - rect.size.height
-        self.wwanSendLabel.frame = rect
-    }
-    
+
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    private(set) lazy var infoLabel: UILabel = {
-        let new = UILabel()
-        new.font = UIFont.systemFont(ofSize: 12)
-        new.textColor = UIColor.white
-        return new
-    }()
-    
-    private(set) lazy var wifiSendLabel: UILabel = {
-        let new = UILabel()
-        new.font = UIFont.systemFont(ofSize: 12)
-        new.textColor = UIColor.white
-        return new
-    }()
-    
-    private(set) lazy var wifiReceivedLabel: UILabel = {
-        let new = UILabel()
-        new.font = UIFont.systemFont(ofSize: 12)
-        new.textColor = UIColor.white
-        return new
-    }()
-    
-    private(set) lazy var wwanSendLabel: UILabel = {
-        let new = UILabel()
-        new.font = UIFont.systemFont(ofSize: 12)
-        new.textColor = UIColor.white
-        return new
-    }()
-    
-    private(set) lazy var wwanReceivedLabel: UILabel = {
-        let new = UILabel()
-        new.font = UIFont.systemFont(ofSize: 12)
-        new.textColor = UIColor.white
-        return new
-    }()
-    
-    private lazy var topLine: UIView = {
-        let new = UIView()
-        new.backgroundColor = UIColor.white
-        return new
-    }()
-    
+}
+
+extension MonitorSysNetFlowView {
+    private func setupViews() {
+        addSubview(infoLabel)
+        addSubview(stackView)
+
+        NSLayoutConstraint.activate([
+            infoLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
+            infoLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
+            infoLabel.topAnchor.constraint(equalTo: topAnchor)
+        ])
+
+        NSLayoutConstraint.activate([
+            stackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
+            stackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10),
+            stackView.topAnchor.constraint(equalTo: infoLabel.bottomAnchor, constant: 10),
+            stackView.bottomAnchor.constraint(equalTo: bottomAnchor)
+        ])
+    }
+
+    func bind(wifiSend: UInt32, wifiReceived: UInt32, wwanSend: UInt32, wwanReceived: UInt32) {
+        wifiSendLabel.attributedText = attributedString(prefix: "wifi send:", byte: wifiSend)
+        wifiReceivedLabel.attributedText = attributedString(prefix: "wifi received:", byte: wifiReceived)
+        wwanSendLabel.attributedText = attributedString(prefix: "wwan send:", byte: wwanSend)
+        wwanReceivedLabel.attributedText = attributedString(prefix: "wwan received:", byte: wwanReceived)
+    }
+}
+
+extension MonitorSysNetFlowView {
+    private func attributedString(prefix: String, byte: UInt32) -> NSAttributedString {
+        let result = NSMutableAttributedString()
+        let storage = Double(byte).storageCapacity()
+
+        result.append(NSAttributedString(string: prefix + "  ",
+                                         attributes: [.font: UIFont.systemFont(ofSize: 10),
+                                                      .foregroundColor: UIColor.white]))
+        result.append(NSAttributedString(string: String(format: "%.1f", storage.capacity),
+                                         attributes: [.font: UIFont(name: "HelveticaNeue-UltraLight", size: 18),
+                                                      .foregroundColor: UIColor.white]))
+        result.append(NSAttributedString(string: " \(storage.unit)",
+                                         attributes: [.font: UIFont(name: "HelveticaNeue-UltraLight", size: 12),
+                                                      .foregroundColor: UIColor.white]))
+        return result
+    }
 }

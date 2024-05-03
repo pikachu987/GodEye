@@ -23,8 +23,8 @@ import Foundation
  * @returns The bundle path concatenated with the given relative path.
  */
 public func AppPathForBundleResource(bundle: Bundle?, relativePath: String) -> String {
-    let resourcePath = (bundle == nil ? Bundle.main : bundle)!.resourcePath!
-    
+    guard let resourcePath = (bundle == nil ? Bundle.main : bundle)?.resourcePath else { return "" }
+
     return (resourcePath as NSString).appendingPathComponent(relativePath)
 }
 
@@ -34,7 +34,7 @@ public func AppPathForBundleResource(bundle: Bundle?, relativePath: String) -> S
  * @returns The documents path concatenated with the given relative path.
  */
 public func AppPathForDocumentsResource(relativePath: String) -> String {
-    return documentsPath.appendingPathComponent(relativePath)
+    documentsPath.appendingPathComponent(relativePath)
 }
 
 /**
@@ -43,7 +43,7 @@ public func AppPathForDocumentsResource(relativePath: String) -> String {
  * @returns The Library path concatenated with the given relative path.
  */
 public func AppPathForLibraryResource(relativePath: String) -> String {
-    return libraryPath.appendingPathComponent(relativePath)
+    libraryPath.appendingPathComponent(relativePath)
 }
 
 /**
@@ -52,7 +52,7 @@ public func AppPathForLibraryResource(relativePath: String) -> String {
  * @returns The caches path concatenated with the given relative path.
  */
 public func AppPathForCachesResource(relativePath: String) -> String {
-    return cachesPath.appendingPathComponent(relativePath)
+    cachesPath.appendingPathComponent(relativePath)
 }
 
 
@@ -62,7 +62,7 @@ public func AppPathForCachesResource(relativePath: String) -> String {
  * @returns The caches path concatenated with the given relative path.
  */
 public func AppPathForApplicationSupportResource(relativePath: String) -> String {
-    return applicationSupportPath.appendingPathComponent(relativePath)
+    applicationSupportPath.appendingPathComponent(relativePath)
 }
 
 /// 将document目录作为常量保存起来，提高访问性能

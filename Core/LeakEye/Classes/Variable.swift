@@ -14,9 +14,9 @@ import Foundation
 //--------------------------------------------------------------------------
 class Variable: NSObject {
     
-    init(property:objc_property_t) {
-        super.init()
+    init(property: objc_property_t) {
         self.property = property
+        super.init()
     }
     
     //--------------------------------------------------------------------------
@@ -25,26 +25,27 @@ class Variable: NSObject {
     
     /// is a strong property
     func isStrong() -> Bool {
-        let attr = String(cString: property_getAttributes(self.property)!)
-        return attr.contains("&")
+        attr.contains("&")
     }
     
     /// name of the property
     func name() -> String {
-        return String(cString: property_getName(self.property))
+        String(cString: property_getName(property))
     }
     
     /// type of the property
     func type() -> AnyClass? {
-        let t = String(cString: property_getAttributes(self.property)!).components(separatedBy: ",").first
-        guard let type = t?.between("@\"", "\"") else {
-            return nil
-        }
+        let t = attr.components(separatedBy: ",").first
+        guard let type = t?.between("@\"", "\"") else { return nil }
         return NSClassFromString(type)
     }
     //--------------------------------------------------------------------------
     // MARK: PRIVATE PROPERTY
     //--------------------------------------------------------------------------
-    fileprivate var property: objc_property_t!
+    private let property: objc_property_t
+
+    private var attr: String {
+        property_getAttributes(property).map { String(cString: $0) } ?? ""
+    }
 }
 

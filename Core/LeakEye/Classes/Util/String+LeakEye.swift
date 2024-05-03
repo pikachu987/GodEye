@@ -17,15 +17,11 @@ extension String {
     ///
     ///  - returns: The string between the two bookends, or nil if the bookends cannot be found, the bookends are the same or appear contiguously.
     public func between(_ left: String, _ right: String) -> String? {
-        
-        
         guard
             let leftRange = range(of:left),
-            let rightRange = self.range(of: right, options: String.CompareOptions.backwards, range: nil, locale: nil),
+            let rightRange = range(of: right, options: String.CompareOptions.backwards, range: nil, locale: nil),
             left != right && leftRange.upperBound != rightRange.lowerBound
             else { return nil }
-        
-        
         return String(self[leftRange.upperBound..<rightRange.lowerBound])
         
     }

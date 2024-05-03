@@ -10,16 +10,9 @@ import Foundation
 import UIKit
 
 extension UIFont {
-    
-    class func printAllNames() {
-        let familyNames = UIFont.familyNames
-        
-        for familyName in familyNames {
-            print("-------\(familyName)-------")
-            let fontNames = UIFont.fontNames(forFamilyName: familyName)
-            for fontName in fontNames {
-                print(fontName)
-            }
-        }
+    class func allNames() -> [String] {
+        UIFont.familyNames
+            .map { UIFont.fontNames(forFamilyName: $0) }
+            .flatMap { $0 }
     }
 }

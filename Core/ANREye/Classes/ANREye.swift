@@ -11,11 +11,11 @@ import Foundation
 //--------------------------------------------------------------------------
 // MARK: - ANREyeDelegate
 //--------------------------------------------------------------------------
-@objc public protocol ANREyeDelegate: class {
-    @objc optional func anrEye(anrEye:ANREye,
-                               catchWithThreshold threshold:Double,
-                               mainThreadBacktrace:String?,
-                               allThreadBacktrace:String?)
+@objc public protocol ANREyeDelegate: AnyObject {
+    @objc optional func anrEye(anrEye: ANREye,
+                               catchWithThreshold threshold: Double,
+                               mainThreadBacktrace: String?,
+                               allThreadBacktrace: String?)
 }
 
 //--------------------------------------------------------------------------
@@ -30,9 +30,7 @@ open class ANREye: NSObject {
     
     open var isOpening: Bool {
         get {
-            guard let pingThread = self.pingThread else {
-                return false
-            }
+            guard let pingThread = pingThread else { return false }
             return !pingThread.isCancelled
         }
     }
@@ -43,21 +41,19 @@ open class ANREye: NSObject {
     open func open(with threshold:Double) {
         if Thread.current.isMainThread {
             AppBacktrace.main_thread_id = mach_thread_self()
-        }else {
+        } else {
             DispatchQueue.main.async {
                 AppBacktrace.main_thread_id = mach_thread_self()
             }
         }
         
-        self.pingThread = AppPingThread()
-        self.pingThread?.start(threshold: threshold, handler: { [weak self] in
-            guard let sself = self else {
-                return
-            }
-            
+        pingThread = AppPingThread()
+        pingThread?.start(threshold: threshold, handler: { [weak self] in
+            guard let self = self else { return }
+
             let main = AppBacktrace.mainThread()
             let all = AppBacktrace.allThread()
-            sself.delegate?.anrEye?(anrEye: sself,
+            self.delegate?.anrEye?(anrEye: self,
                                    catchWithThreshold: threshold,
                                    mainThreadBacktrace: main,
                                    allThreadBacktrace: all)
@@ -66,14 +62,14 @@ open class ANREye: NSObject {
     }
     
     open func close() {
-        self.pingThread?.cancel()
+        pingThread?.cancel()
     }
     
     //--------------------------------------------------------------------------
     // MARK: LIFE CYCLE
     //--------------------------------------------------------------------------
     deinit {
-        self.pingThread?.cancel()
+        pingThread?.cancel()
     }
     
     //--------------------------------------------------------------------------
@@ -96,24 +92,24 @@ private class AppPingThread: Thread {
     func start(threshold:Double, handler: @escaping AppPingThreadCallBack) {
         self.handler = handler
         self.threshold = threshold
-        self.start()
+        start()
     }
     
     override func main() {
         
-        while self.isCancelled == false {
-            self.isMainThreadBlock = true
+        while !isCancelled {
+            isMainThreadBlock = true
             DispatchQueue.main.async {
                 self.isMainThreadBlock = false
                 self.semaphore.signal()
             }
             
-            Thread.sleep(forTimeInterval: self.threshold)
-            if self.isMainThreadBlock  {
-                self.handler?()
+            Thread.sleep(forTimeInterval: threshold)
+            if isMainThreadBlock  {
+                handler?()
             }
             
-            _ = self.semaphore.wait(timeout: DispatchTime.distantFuture)
+            _ = semaphore.wait(timeout: DispatchTime.distantFuture)
         }
     }
     

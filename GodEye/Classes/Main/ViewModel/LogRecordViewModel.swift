@@ -8,50 +8,35 @@
 
 import Foundation
 
-class LogRecordViewModel: BaseRecordViewModel {
-    
-    private(set) var model:LogRecordModel!
-    
-    init(_ model:LogRecordModel) {
-        super.init()
-        self.model = model
-        
+class LogRecordViewModel: BaseRecordViewModel<LogRecordModel> {
+    init(_ model: LogRecordModel) {
+        super.init(model: model)
     }
-    func attributeString() -> NSAttributedString {
-        
+
+    override func attributeString(type: RecordORMAttributedType) -> NSAttributedString {
         let result = NSMutableAttributedString()
-        
-        result.append(self.headerString())
-        if let additon = self.additionString() {
+        result.append(headerString(type: type))
+        if let additon = additionString(type: type) {
             result.append(additon)
         }
         return result
     }
     
-    private func headerString() -> NSAttributedString {
-        return self.headerString(with: self.model.type.string(), content: self.model.message, color: self.model.type.color())
+    private func headerString(type: RecordORMAttributedType) -> NSAttributedString {
+        headerString(with: type, prefix: model.type.string, content: model.message, color: model.type.color)
     }
     
-    private func additionString() ->NSAttributedString? {
-        if self.model.type == .asl {
-            return nil
-        }
-        
-        let date = self.model.date ?? ""
-        let thread = self.model.thread ?? ""
-        let file = self.model.file ?? ""
-        let line = self.model.line ?? -1
-        let function = self.model.function ?? ""
+    private func additionString(type: RecordORMAttributedType) -> NSAttributedString? {
+        if model.type == .asl { return nil }
+
+        let date = model.date ?? ""
+        let thread = model.thread ?? ""
+        let file = model.file ?? ""
+        let line = model.line ?? -1
+        let function = model.function ?? ""
         
         var content: String = "[\(file): \(line)](\(function)) \(date) -> \(thread)"
-        let result = NSMutableAttributedString(attributedString: self.contentString(with: nil, content: content))
-        let  range = result.string.NS.range(of: content)
-        if range.location != NSNotFound {
-            let att = [NSAttributedString.Key.font:UIFont(name: "Courier", size: 10)!,
-                       NSAttributedString.Key.foregroundColor:UIColor.white] as! [NSAttributedString.Key : Any]
-            result.setAttributes(att, range: range)
-        }
+        let result = NSMutableAttributedString(attributedString: contentString(with: type, prefix: nil, content: content))
         return result
-        
     }
 }

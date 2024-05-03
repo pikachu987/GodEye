@@ -22,7 +22,7 @@ open class Network: NSObject {
     /// mobile carrier name
     public static var carrierName: String? {
         get {
-            return self.carrier?.carrierName
+            carrier?.carrierName
         }
     }
     
@@ -37,26 +37,26 @@ open class Network: NSObject {
     /// mobile carrier country code
     public static var carrierMobileCountryCode: String? {
         get {
-            return self.carrier?.mobileCountryCode
+            carrier?.mobileCountryCode
         }
     }
     
     /// get the carrier iso country code
     public static var carrierISOCountryCode: String? {
         get {
-            return self.carrier?.isoCountryCode
+            carrier?.isoCountryCode
         }
     }
     /// get the carrier mobile network code
     public static var carrierMobileNetworkCode: String? {
         get {
-            return self.carrier?.mobileNetworkCode
+            carrier?.mobileNetworkCode
         }
     }
     
     public static var carrierAllowVOIP: Bool {
         get {
-            return self.carrier?.allowsVOIP ?? false
+            carrier?.allowsVOIP ?? false
         }
     }
     
@@ -66,27 +66,20 @@ open class Network: NSObject {
     
     public static var isConnectedToWifi: Bool {
         get {
-            guard let address = self.wifiIPAddress else {
-                return false
-            }
-            
-            guard address.count <= 0 else {
-                return false
-            }
-            
+            guard let address = wifiIPAddress, address.count <= 0 else { return false }
             return true
         }
     }
     
     public static var wifiIPAddress: String? {
         get {
-           return NetObjc.wifiIPAddress()
+           NetObjc.wifiIPAddress()
         }
     }
     
     public static var wifiNetmaskAddress: String? {
         get {
-            return NetObjc.wifiNetmaskAddress()
+            NetObjc.wifiNetmaskAddress()
         }
     }
     
@@ -96,27 +89,20 @@ open class Network: NSObject {
     
     public static var isConnectedToCell: Bool {
         get {
-            guard let address = self.cellIPAddress else {
-                return false
-            }
-            
-            guard address.count <= 0 else {
-                return false
-            }
-            
+            guard let address = cellIPAddress, address.count <= 0 else { return false }
             return true
         }
     }
     
     public static var cellIPAddress: String? {
         get {
-            return NetObjc.cellIPAddress()
+            NetObjc.cellIPAddress()
         }
     }
     
     public static var cellNetmaskAddress: String? {
         get {
-            return NetObjc.cellNetmaskAddress()
+            NetObjc.cellNetmaskAddress()
         }
     }
     //--------------------------------------------------------------------------
@@ -127,7 +113,7 @@ open class Network: NSObject {
                                 wwanSend: UInt32,
                             wwanReceived: UInt32) {
         let flow = NetObjc.flow()
-        return (flow.wifiSend,flow.wifiReceived,flow.wwanSend,flow.wwanReceived)
+        return (flow.wifiSend, flow.wifiReceived, flow.wwanSend, flow.wwanReceived)
     }
     
     //--------------------------------------------------------------------------
@@ -135,7 +121,7 @@ open class Network: NSObject {
     //--------------------------------------------------------------------------
     private static var carrier: CTCarrier? {
         get {
-            return CTTelephonyNetworkInfo().subscriberCellularProvider
+            CTTelephonyNetworkInfo().subscriberCellularProvider
         }
     }
     

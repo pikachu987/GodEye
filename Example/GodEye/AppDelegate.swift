@@ -9,14 +9,6 @@
 import UIKit
 import GodEye
 
-func alert(t:String, _ m:String) {
-    let alertView = UIAlertView()
-    alertView.title = t
-    alertView.message = m
-    alertView.addButton(withTitle: "OK")
-    alertView.show()
-}
-
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
@@ -37,5 +29,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         GodEye.makeEye(with: self.window!, configuration: configuration)
         return true
+    }
+
+    static func showAlert(t: String, m: String) {
+        let alertController = UIAlertController(title: t, message: m, preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: "OK", style: .cancel))
+        (UIApplication.shared.delegate as? AppDelegate)?.window?.rootViewController?.present(alertController, animated: true)
     }
 }

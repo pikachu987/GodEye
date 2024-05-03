@@ -8,70 +8,88 @@
 
 import Foundation
 
-class RecordTableViewCell: UITableViewCell {
-    
+protocol RecordTableViewCellDelete: AnyObject {
+    func recordTableViewCellTapped(_ sender: RecordTableViewCell)
+    func recordTableViewCellMoreTapped(_ sender: RecordTableViewCell)
+}
+
+final class RecordTableViewCell: UITableViewCell {
+    weak var delegate: RecordTableViewCellDelete?
 
     static let reuseIdentifier = NSStringFromClass(RecordTableViewCell.classForCoder())
-    
+
+    private lazy var logTextView: UITextView = {
+        $0.translatesAutoresizingMaskIntoConstraints = false
+        $0.isEditable = false
+        $0.isScrollEnabled = false
+        $0.textContainer.lineFragmentPadding = 0
+        $0.textContainerInset = .zero
+        $0.textAlignment = .left
+        $0.clipsToBounds = true
+        $0.font = .courier(with: 12)
+        $0.textColor = .white
+        $0.backgroundColor = .clear
+        $0.linkTextAttributes = [:]
+        return $0
+    }(UITextView())
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        self.backgroundColor = UIColor.clear
-        self.selectionStyle = .none
+        backgroundColor = .clear
+        selectionStyle = .none
         
-        self.addSubview(self.logTextView)
+        contentView.addSubview(logTextView)
+
+        NSLayoutConstraint.activate([
+            logTextView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 5),
+            logTextView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -5),
+            logTextView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            logTextView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)])
+
+        logTextView.delegate = self
+//        logTextView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapped(_:))))
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    func configure(_ attributedText: NSAttributedString) {
-        self.logTextView.attributedText = attributedText
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+
+        logTextView.attributedText = nil
     }
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        
-        var rect = self.bounds
-        rect.origin.x = 5
-        rect.size.width -= 10
-        self.logTextView.frame = rect
+
+    func bind(_ attributedText: NSAttributedString) {
+        logTextView.attributedText = attributedText
     }
-    
-//        private lazy var logLabel: UILabel = {
-//            let new = UILabel()
-//            new.numberOfLines = 0
-//            new.font = Define.Font.log
-//            new.textColor = self.configurator.skin.textBodyColor
-//            new.backgroundColor = UIColor.clear
-//            return new
-//        }()
-    
-    private lazy var logTextView: UITextView = { [unowned self] in
-        let new = UITextView()
-        new.isSelectable = false
-        new.isEditable = false
-        new.isScrollEnabled = false
-        new.textContainer.lineFragmentPadding = 0
-        new.textContainerInset = UIEdgeInsets.zero
-        new.textAlignment = .left
-        new.clipsToBounds = true
-        new.font = UIFont.courier(with: 12)
-        new.textColor = UIColor.white
-        new.backgroundColor = UIColor.clear
-        new.isUserInteractionEnabled = false
-        return new
-        }()
 }
 
+extension RecordTableViewCell {
+    @objc private func tapped(_ sender: UITapGestureRecognizer) {
+        delegate?.recordTableViewCellTapped(self)
+    }
+}
 
 extension RecordTableViewCell {
-    
-    class func boundingHeight(with width:CGFloat,
-                              attributedText:NSAttributedString) -> CGFloat {
+    class func boundingHeight(with width: CGFloat,
+                              attributedText: NSAttributedString) -> CGFloat {
         let size = CGSize(width: width, height: CGFloat.greatestFiniteMagnitude)
         let rect = attributedText.boundingRect(with: size, options: [.usesLineFragmentOrigin, .usesDeviceMetrics, .usesFontLeading,.truncatesLastVisibleLine], context: nil)
         return max(rect.size.height, 10.5)
+    }
+}
+
+extension RecordTableViewCell: UITextViewDelegate {
+    func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
+        //Replaced by primaryActionForTextItem: and menuConfigurationForTextItem: for additional customization options
+        if URL.absoluteString == "moreTap" {
+            delegate?.recordTableViewCellMoreTapped(self)
+        } else if URL.absoluteString == "tap" {
+            delegate?.recordTableViewCellTapped(self)
+        }
+
+        return false
     }
 }

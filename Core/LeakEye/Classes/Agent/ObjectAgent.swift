@@ -34,7 +34,7 @@ class ObjectAgent: NSObject {
                                                   name: NSNotification.Name.scan,
                                                   object: nil)
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(ObjectAgent.handleScan),
+                                               selector: #selector(handleScan),
                                                name: NSNotification.Name.scan,
                                                object: nil)
         
@@ -50,32 +50,24 @@ class ObjectAgent: NSObject {
     // MARK: PRIVATE FUNCTION
     //--------------------------------------------------------------------------
     @objc private func handleScan() {
-        
-        if self.object == nil {
-            return
-        }
-        
-        if self.didNotified {
-            return
-        }
-        
-        let alive = self.object?.isAlive()
+        if object == nil { return }
+        if didNotified { return }
+
+        let alive = object?.isAlive()
         if alive == false {
-            self.leakCheckFailCount += 1
+            leakCheckFailCount += 1
         }
         
-        if self.leakCheckFailCount >= 5 {
-            self.notifyPossibleLeak()
+        if leakCheckFailCount >= 5 {
+            notifyPossibleLeak()
         }
     }
     
     private func notifyPossibleLeak() {
-        if self.didNotified {
-            return
-        }
-        
-        self.didNotified = true
-        NotificationCenter.default.post(name: NSNotification.Name.receive, object: self.object)
+        if didNotified { return }
+
+        didNotified = true
+        NotificationCenter.default.post(name: NSNotification.Name.receive, object: object)
     }
     
     //--------------------------------------------------------------------------
