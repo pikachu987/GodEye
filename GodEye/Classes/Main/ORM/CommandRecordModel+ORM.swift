@@ -13,33 +13,69 @@ extension CommandRecordModel: RecordORMProtocol {
     var isPreview: Bool { false }
 
     static var type: RecordType { .command }
-
-    func mappingToRelation() -> [Setter] {
-        [CommandRecordModel.col.command <- command,
-         CommandRecordModel.col.actionResult <- actionResult]
-    }
     
+    static var filterTypes: [RecordORMFilterType] {
+        [.init(title: "all", value: nil)] +
+        FilterType.allCases
+            .map { .init(title: $0.title, value: "\($0.value)") }
+    }
+
     static func mappingToObject(with row: Row) -> CommandRecordModel {
-        CommandRecordModel(command: row[CommandRecordModel.col.command],
-                           actionResult: row[CommandRecordModel.col.actionResult])
+        CommandRecordModel(command: row[Col.command],
+                           actionResult: row[Col.actionResult])
     }
     
     static func configure(tableBuilder: TableBuilder) {
-        tableBuilder.column(CommandRecordModel.col.command)
-        tableBuilder.column(CommandRecordModel.col.actionResult)
+        tableBuilder.column(Col.command)
+        tableBuilder.column(Col.actionResult)
     }
     
-    static func configure(select table: Table) -> Table {
-        table.select(CommandRecordModel.col.command,
-                     CommandRecordModel.col.actionResult)
+    static func configure(select table: Table, filterType: RecordORMFilterType, filterText: String) -> Table {
+        let table = table.select(Col.command,
+                                 Col.actionResult)
+        guard !filterText.isEmpty else { return table }
+        if let value = filterType.value {
+            return table.filter(Expression<String>(value).like("%\(filterText)%"))
+        } else {
+            return table.filter(Col.command.like("%\(filterText)%") ||
+                                Col.actionResult.like("%\(filterText)%"))
+        }
     }
-    
-    func attributeString(type: RecordORMAttributedType) -> NSAttributedString {
-        CommandRecordViewModel(self).attributeString(type: type)
+
+    func mappingToRelation() -> [Setter] {
+        [Col.command <- command,
+         Col.actionResult <- actionResult]
     }
-    
-    class col: NSObject {
+
+    func attributeString(type: RecordORMAttributedType, filterType: RecordORMFilterType?, filterText: String?) -> NSAttributedString {
+        CommandRecordViewModel(self).attributeString(type: type, filterType: filterType, filterText: filterText)
+    }
+
+    class Col: NSObject {
         static let command = Expression<String>("command")
         static let actionResult = Expression<String>("actionResult")
+    }
+
+    enum FilterType: FilterTypeable {
+        case command
+        case result
+
+        var title: String {
+            switch self {
+            case .command: return "command"
+            case .result: return "result"
+            }
+        }
+
+        var value: String {
+            switch self {
+            case .command: return "command"
+            case .result: return "actionResult"
+            }
+        }
+
+        func equal(filterType: RecordORMFilterType?) -> Bool {
+            filterType?.title == title && filterType?.value == value
+        }
     }
 }

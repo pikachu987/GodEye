@@ -11,13 +11,13 @@ import UIKit
 extension FileListViewController: UITableViewDataSource, UITableViewDelegate {
     
     //MARK: UITableViewDataSource, UITableViewDelegate
-    
+
     func numberOfSections(in tableView: UITableView) -> Int {
-        searchController.isActive ? 1 : sections.count
+        isFilter ? 1 : sections.count
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if searchController.isActive {
+        if isFilter {
             return filteredFiles.count
         }
         guard sections.indices ~= section else { return 0 }
@@ -34,7 +34,9 @@ extension FileListViewController: UITableViewDataSource, UITableViewDelegate {
         cell.contentView.backgroundColor = .clear
         cell.selectionStyle = .blue
         let selectedFile = fileForIndexPath(indexPath)
-        cell.textLabel?.text = selectedFile?.displayName
+        let attributedString = NSMutableAttributedString(string: selectedFile?.displayName ?? "")
+        attributedString.highlight(highlightText: filterText)
+        cell.textLabel?.attributedText = attributedString
         cell.detailTextLabel?.text = selectedFile.map {
             convertSizeToReadableString(with: $0.size)
         }
@@ -43,8 +45,8 @@ extension FileListViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        resignFirstResponder()
         guard let selectedFile = fileForIndexPath(indexPath) else { return }
-        searchController.isActive = false
         if selectedFile.isDirectory {
             let fileListViewController = FileListViewController(initialPath: selectedFile.filePath,
                                                                 allowEditing: allowEditing)
@@ -63,7 +65,7 @@ extension FileListViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        if searchController.isActive {
+        if isFilter {
             return nil
         } else if sections[section].count > 0 {
             return collation.sectionTitles[section]
@@ -73,14 +75,14 @@ extension FileListViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func sectionIndexTitles(for tableView: UITableView) -> [String]? {
-        if searchController.isActive {
+        if isFilter {
             return nil
         }
         return collation.sectionIndexTitles
     }
     
     func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int {
-        if searchController.isActive {
+        if isFilter {
             return 0
         }
         return collation.section(forSectionIndexTitle: index)

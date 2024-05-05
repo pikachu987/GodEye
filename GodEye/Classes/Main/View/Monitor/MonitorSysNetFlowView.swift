@@ -96,7 +96,7 @@ extension MonitorSysNetFlowView {
         ])
     }
 
-    func bind(wifiSend: UInt32, wifiReceived: UInt32, wwanSend: UInt32, wwanReceived: UInt32) {
+    func bind(wifiSend: UInt64, wifiReceived: UInt64, wwanSend: UInt64, wwanReceived: UInt64) {
         wifiSendLabel.attributedText = attributedString(prefix: "wifi send:", byte: wifiSend)
         wifiReceivedLabel.attributedText = attributedString(prefix: "wifi received:", byte: wifiReceived)
         wwanSendLabel.attributedText = attributedString(prefix: "wwan send:", byte: wwanSend)
@@ -105,7 +105,7 @@ extension MonitorSysNetFlowView {
 }
 
 extension MonitorSysNetFlowView {
-    private func attributedString(prefix: String, byte: UInt32) -> NSAttributedString {
+    private func attributedString(prefix: String, byte: UInt64) -> NSAttributedString {
         let result = NSMutableAttributedString()
         let storage = Double(byte).storageCapacity()
 

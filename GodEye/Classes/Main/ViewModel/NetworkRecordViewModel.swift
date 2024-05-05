@@ -13,27 +13,27 @@ class NetworkRecordViewModel: BaseRecordViewModel<NetworkRecordModel> {
         super.init(model: model)
     }
 
-    override func attributeString(type: RecordORMAttributedType) -> NSAttributedString {
+    override func attributeString(type: RecordORMAttributedType, filterType: RecordORMFilterType?, filterText: String?) -> NSAttributedString {
         let result = NSMutableAttributedString()
         result.append(headerString(type: type))
         if type == .preview {
             result.append(moreLinkString(with: model.isAllShow ? "Click cell to preview" : "Click cell to show all"))
         }
-        result.append(requestURLString(type: type))
+        result.append(requestURLString(type: type, filterType: filterType, filterText: filterText))
 
         if (type == .preview && model.isAllShow) || type == .detail {
             result.append(requestCachePolicyString(type: type))
             result.append(requestTimeoutIntervalString(type: type))
-            result.append(requestHTTPMethodString(type: type))
+            result.append(requestHTTPMethodString(type: type, filterType: filterType, filterText: filterText))
             result.append(requestAllHTTPHeaderFieldsString(type: type))
-            result.append(requestHTTPBodyString(type: type))
+            result.append(requestHTTPBodyString(type: type, filterType: filterType, filterText: filterText))
             result.append(responseMIMETypeString(type: type))
             result.append(responseExpectedContentLengthString(type: type))
             result.append(responseTextEncodingNameString(type: type))
             result.append(responseSuggestedFilenameString(type: type))
             result.append(responseStatusCodeString(type: type))
             result.append(responseAllHeaderFieldsString(type: type))
-            result.append(receiveJSONDataString(type: type))
+            result.append(receiveJSONDataString(type: type, filterType: filterType, filterText: filterText))
         }
         return result
     }
@@ -42,8 +42,9 @@ class NetworkRecordViewModel: BaseRecordViewModel<NetworkRecordModel> {
         headerString(with: type, prefix: "NETWORK", color: UIColor(hex: 0xDF1921))
     }
     
-    private func requestURLString(type: RecordORMAttributedType) -> NSAttributedString {
-        contentString(with: type, prefix: "requestURL", content: model.requestURLString)
+    private func requestURLString(type: RecordORMAttributedType, filterType: RecordORMFilterType?, filterText: String?) -> NSAttributedString {
+        let highlightText = NetworkRecordModel.FilterType.url.highlightText(filterType: filterType, filterText: filterText)
+        return contentString(with: type, prefix: "requestURL", content: model.requestURLString, highlightText: highlightText)
     }
     
     private func requestCachePolicyString(type: RecordORMAttributedType) -> NSAttributedString {
@@ -54,16 +55,18 @@ class NetworkRecordViewModel: BaseRecordViewModel<NetworkRecordModel> {
         contentString(with: type, prefix: "requestTimeoutInterval", content: model.requestTimeoutInterval)
     }
     
-    private func requestHTTPMethodString(type: RecordORMAttributedType) -> NSAttributedString {
-        contentString(with: type, prefix: "requestHTTPMethod", content: model.requestHTTPMethod)
+    private func requestHTTPMethodString(type: RecordORMAttributedType, filterType: RecordORMFilterType?, filterText: String?) -> NSAttributedString {
+        let highlightText = NetworkRecordModel.FilterType.method.highlightText(filterType: filterType, filterText: filterText)
+        return contentString(with: type, prefix: "requestHTTPMethod", content: model.requestHTTPMethod, highlightText: highlightText)
     }
     
     private func requestAllHTTPHeaderFieldsString(type: RecordORMAttributedType) -> NSAttributedString {
         contentString(with: type, prefix: "requestAllHTTPHeaderFields", content: model.requestAllHTTPHeaderFields)
     }
     
-    private func requestHTTPBodyString(type: RecordORMAttributedType) -> NSAttributedString {
-        contentString(with: type, prefix: "requestHTTPBody", content: model.requestHTTPBody)
+    private func requestHTTPBodyString(type: RecordORMAttributedType, filterType: RecordORMFilterType?, filterText: String?) -> NSAttributedString {
+        let highlightText = NetworkRecordModel.FilterType.reqBody.highlightText(filterType: filterType, filterText: filterText)
+        return contentString(with: type, prefix: "requestHTTPBody", content: model.requestHTTPBody, highlightText: highlightText)
     }
     
     private func responseMIMETypeString(type: RecordORMAttributedType) -> NSAttributedString {
@@ -107,20 +110,21 @@ class NetworkRecordViewModel: BaseRecordViewModel<NetworkRecordModel> {
         return result
     }
     
-    private func receiveJSONDataString(type: RecordORMAttributedType) -> NSAttributedString {
+    private func receiveJSONDataString(type: RecordORMAttributedType, filterType: RecordORMFilterType?, filterText: String?) -> NSAttributedString {
         guard let transString: String = {
             if type == .detail, let pretty = replacePretty(string: $0) { return pretty }
             return $0
         }(replaceUnicode(string: model.receiveJSONData)) else { return .init() }
         guard let responseMIMEType = model.responseMIMEType else { return .init() }
 
+        let highlightText = NetworkRecordModel.FilterType.result.highlightText(filterType: filterType, filterText: filterText)
         var header = "responseJSON"
         if responseMIMEType == "application/xml"
             || responseMIMEType == "text/xml"
             || responseMIMEType == "text/plain"  {
             header = "responseXML"
         }
-        var result = NSMutableAttributedString(attributedString: contentString(with: type, prefix: header, content: transString, newline: true))
+        var result = NSMutableAttributedString(attributedString: contentString(with: type, prefix: header, content: transString, newline: true, highlightText: highlightText))
         let range = result.string.NS.range(of: transString)
         if range.location != NSNotFound {
             result.addAttribute(.font, value: UIFont.courier(with: type.contentDetailFontSize), range: range)

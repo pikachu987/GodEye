@@ -58,7 +58,7 @@ final class FileBrowserNavigationController: UINavigationController {
                                                             allowEditing: allowEditing)
 
         self.init(rootViewController: fileListViewController)
-        view.backgroundColor = .fileBrowserBackground()
+        view.backgroundColor = .fileBrowserBackground
         fileList = fileListViewController
     }
 }

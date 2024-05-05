@@ -15,21 +15,24 @@ class BaseRecordViewModel<T: RecordORMProtocol>: NSObject {
         self.model = model
     }
 
-    func attributeString(type: RecordORMAttributedType) -> NSAttributedString {
+    func attributeString(type: RecordORMAttributedType, filterType: RecordORMFilterType?, filterText: String?) -> NSAttributedString {
         .init()
     }
 
-    func headerString(with type: RecordORMAttributedType, prefix: String, content: String? = nil, color: UIColor) -> NSAttributedString {
-        let header = "> \(prefix): \(content ?? "")\n"
+    func headerString(with type: RecordORMAttributedType, prefix: String? = nil, content: String? = nil, color: UIColor, highlightText: String? = nil) -> NSAttributedString {
+        let header = prefix.map { "> \($0): \(content ?? "")\n" } ?? "\(content ?? "")\n"
         let result = NSMutableAttributedString(string: header, attributes: tapAttributes(with: type, fontSize: type.headerFontSize))
-        let range = header.NS.range(of: prefix)
-        if range.location + range.length <= header.NS.length {
-            result.addAttributes([.foregroundColor: color], range: range)
+        prefix.map {
+            let range = header.NS.range(of: $0)
+            if range.location + range.length <= header.NS.length {
+                result.addAttributes([.foregroundColor: color], range: range)
+            }
         }
+        result.highlight(highlightText: highlightText)
         return result
     }
 
-    func contentString(with type: RecordORMAttributedType, prefix: String?, content: String?, newline:Bool = false, color: UIColor = UIColor(hex: 0x3D82C7)) -> NSAttributedString {
+    func contentString(with type: RecordORMAttributedType, prefix: String? = nil, content: String? = nil, newline: Bool = false, color: UIColor = UIColor(hex: 0x3D82C7), highlightText: String? = nil) -> NSAttributedString {
         let pre = prefix.map { "[\($0)]:" } ?? ""
         let line = newline == true ? "\n" : (pre == "" ? "" : " ")
         let str = "\(pre)\(line)\(content ?? "nil")\n"
@@ -38,6 +41,7 @@ class BaseRecordViewModel<T: RecordORMProtocol>: NSObject {
         if range.location != NSNotFound {
             result.addAttribute(.foregroundColor, value: color, range: range)
         }
+        result.highlight(highlightText: highlightText)
         return result
     }
 
@@ -113,3 +117,11 @@ enum RecordORMAttributedType {
     }
 }
 
+
+extension String {
+    func nsRange(from range: Range<String.Index>) -> NSRange {
+        let startPos = self.distance(from: self.startIndex, to: range.lowerBound)
+        let endPos = self.distance(from: self.startIndex, to: range.upperBound)
+        return NSMakeRange(startPos, endPos - startPos)
+    }
+}

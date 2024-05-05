@@ -136,7 +136,7 @@ extension SettingViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         switch section {
-        case 0: return "Switch"
+        case 0: return "Console"
         default: return ""
         }
     }

@@ -18,6 +18,7 @@ final class WebviewViewContoller: UIViewController {
     private let titleText: String
     private let htmlText: String
     private let shareItem: [Any]
+    private var isPrevPopGestureEnabled = true
 
     //MARK: Lifecycle
 
@@ -46,13 +47,14 @@ final class WebviewViewContoller: UIViewController {
 
         navigationItem.title = titleText
         navigationItem.rightBarButtonItem = shareItem.isEmpty ? nil : UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(shareFile(_:)))
+        isPrevPopGestureEnabled = navigationController?.interactivePopGestureRecognizer?.isEnabled ?? true
         navigationController?.interactivePopGestureRecognizer?.isEnabled = false
     }
 
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
 
-        navigationController?.interactivePopGestureRecognizer?.isEnabled = true
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = isPrevPopGestureEnabled
     }
 }
 

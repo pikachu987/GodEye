@@ -7,6 +7,8 @@
 //
 
 import Foundation
+import UIKit
+import GodEye
 
 class DemoModel: NSObject {
     
@@ -113,7 +115,28 @@ class DemoModelFactory: NSObject {
             NSLog("test")
         }
         models.append(model)
-        
+
+        let model2 = DemoModel(title: "NSLog multiple") {
+            let alertController = UIAlertController(title: nil, message: "log prefix", preferredStyle: .alert)
+            alertController.addAction(.init(title: "Cancel", style: .cancel))
+            alertController.addTextField { textField in
+                textField.placeholder = "Prefix text"
+            }
+            alertController.addAction(.init(title: "Send", style: .default, handler: { _ in
+                let text = alertController.textFields?.first?.text ?? ""
+                Array(0..<100).forEach {
+                    Log4G.log("\(text)-\($0)")
+                }
+            }))
+            AppDelegate.rootViewController?.present(alertController, animated: true)
+        }
+        models.append(model2)
+
+        let model3 = DemoModel(title: "NSLog timeInterval") {
+            recursionLog(maxIndex: 100)
+        }
+        models.append(model3)
+
         return DemoSection(header: "ASL", model: models)
     }
     
@@ -129,5 +152,18 @@ class DemoModelFactory: NSObject {
         
         return DemoSection(header: "ANR", model: models)
     }
-    
+
+    private static func recursionLog(_ index: Int = 0, maxIndex: Int) {
+        if index >= maxIndex { return }
+        timeInterval(1, queue: .global()) {
+            Log4G.log("timeInterval-\(index)")
+            recursionLog(index + 1, maxIndex: maxIndex)
+        }
+    }
+
+    private static func timeInterval(_ time: TimeInterval, queue: DispatchQueue, callback: (() -> Void)? = nil) {
+        queue.asyncAfter(deadline: .now() + time) {
+            callback?()
+        }
+    }
 }

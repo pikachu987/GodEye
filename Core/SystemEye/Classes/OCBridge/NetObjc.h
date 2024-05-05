@@ -24,9 +24,9 @@
 
 @interface NetModel : NSObject
 
-@property (nonatomic,assign) u_int32_t wifiSend;
-@property (nonatomic,assign) u_int32_t wifiReceived;
-@property (nonatomic,assign) u_int32_t wwanSend;
-@property (nonatomic,assign) u_int32_t wwanReceived;
+@property (nonatomic,assign) u_int64_t wifiSend;
+@property (nonatomic,assign) u_int64_t wifiReceived;
+@property (nonatomic,assign) u_int64_t wwanSend;
+@property (nonatomic,assign) u_int64_t wwanReceived;
 
 @end

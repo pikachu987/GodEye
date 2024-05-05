@@ -9,9 +9,21 @@
 import Foundation
 import SQLite
 
+struct RecordORMFilterType {
+    let title: String
+    let value: String?
+
+    var isAll: Bool {
+        value == nil
+    }
+}
+
 /// ORM protocol, variable and function which need implement
 protocol RecordORMProtocol: AnyObject {
     var isPreview: Bool { get }
+
+    /// filter type
+    static var filterTypes: [RecordORMFilterType] { get }
 
     /// type of record, need implement the get func
     static var type: RecordType { get }
@@ -31,17 +43,17 @@ protocol RecordORMProtocol: AnyObject {
     ///
     /// - Parameter table: Table
     /// - Returns: Table
-    static func configure(select table: Table) -> Table
-
-    /// NSAttributedString of model
-    ///
-    /// - Returns: NSAttributedString
-    func attributeString(type: RecordORMAttributedType) -> NSAttributedString
+    static func configure(select table: Table, filterType: RecordORMFilterType, filterText: String) -> Table
 
     /// mapping model to ORM's relation
     ///
     /// - Returns: relation: SQLite's Setter
     func mappingToRelation() -> [Setter]
+
+    /// NSAttributedString of model
+    ///
+    /// - Returns: NSAttributedString
+    func attributeString(type: RecordORMAttributedType, filterType: RecordORMFilterType?, filterText: String?) -> NSAttributedString
 }
 
 private var kIsAllShow = "\(#file)+\(#line)"
@@ -50,6 +62,14 @@ private var kAddCount = "\(#file)+\(#line)"
 extension RecordORMProtocol {
     var isPreview: Bool {
         true
+    }
+
+    var filterTypes: [RecordORMFilterType] {
+        []
+    }
+
+    func attributeString(type: RecordORMAttributedType, filterType: RecordORMFilterType? = nil, filterText: String? = nil) -> NSAttributedString {
+        attributeString(type: type, filterType: nil, filterText: nil)
     }
 }
 
@@ -117,14 +137,28 @@ extension RecordORMProtocol {
         complete(true)
     }
     
-    static func select(at index: Int) -> [Self]? {
+    static func select(at index: Int, filterType: RecordORMFilterType, filterText: String) -> [Self]? {
         let pagesize = 100
         let offset = pagesize * index + Self.addCount
 
-        var select = configure(select: table.select(Self.col_id))
+        var select = configure(select: table.select(Self.col_id), filterType: filterType, filterText: filterText)
             .order(Self.col_id.desc)
             .limit(pagesize, offset: offset)
         
+        print("~~~~~~")
+        if let sequence = try? Self.connection?.prepare("SELECT * FROM sqlite_master where type='table';") {
+            for seq in sequence {
+                print("seq: \(seq)")
+                seq.forEach {
+                    print("seq forEach: \($0)")
+                }
+            }
+            print("sequence.columnCount: \(sequence.columnCount)")
+            print("sequence.columnNames: \(sequence.columnNames)")
+            print("sequence.columnNames: \(sequence.makeIterator())")
+        }
+        print("~~~~~~")
+
         do {
             if let sequence = try Self.connection?.prepare(select) {
                 let result = sequence.map { Self.mappingToObject(with: $0) }

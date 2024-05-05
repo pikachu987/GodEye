@@ -13,12 +13,10 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.title = "GodEye Feature List"
-        self.view.backgroundColor = UIColor.black
-        
-        self.view.addSubview(self.tableView)
-        
-        
+
+        title = "GodEye Feature List"
+        view.backgroundColor = UIColor.black
+        view.addSubview(tableView)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -34,18 +32,17 @@ class ViewController: UIViewController {
     
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-        self.tableView.frame = self.view.bounds
+        tableView.frame = view.bounds
     }
     
     
-    private lazy var tableView: UITableView = { [unowned self] in
-        let new = UITableView(frame: CGRect.zero, style: .grouped)
-        new.delegate = self
-        new.dataSource = self
-        return new
-        }()
-    
-    fileprivate lazy var sections:[DemoSection] = {
+    private lazy var tableView: UITableView = {
+        $0.delegate = self
+        $0.dataSource = self
+        return $0
+    }(UITableView(frame: CGRect.zero, style: .grouped))
+
+    fileprivate lazy var sections: [DemoSection] = {
         var new = [DemoSection]()
         new.append(DemoModelFactory.aslSection)
         new.append(DemoModelFactory.crashSection)
@@ -57,11 +54,11 @@ class ViewController: UIViewController {
 
 extension ViewController : UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
-        return self.sections.count
+        sections.count
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.sections[section].model.count
+        sections[section].model.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -72,16 +69,16 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource {
             cell?.textLabel?.font = UIFont(name: "Courier", size: 12)
         }
         
-        cell!.textLabel?.text = self.sections[indexPath.section].model[indexPath.row].title
+        cell!.textLabel?.text = sections[indexPath.section].model[indexPath.row].title
         return cell!
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 40
+        40
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 40
+        40
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -89,13 +86,14 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource {
         let label = UILabel(frame: CGRect(x: 10, y: 15, width: tableView.frame.size.width - 10, height: 20))
         label.backgroundColor = UIColor.clear
         label.font =  UIFont(name: "Courier", size: 14)
-        label.text = self.sections[section].header
+        label.text = sections[section].header
         view.addSubview(label)
         return view
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let model = self.sections[indexPath.section].model[indexPath.row]
+        tableView.deselectRow(at: indexPath, animated: true)
+        let model = sections[indexPath.section].model[indexPath.row]
         model.action()
     }
 }

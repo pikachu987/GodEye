@@ -13,7 +13,11 @@ import GodEye
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
     var window: UIWindow?
-    
+
+    static var rootViewController: UIViewController? {
+        (UIApplication.shared.delegate as? AppDelegate)?.window?.rootViewController
+    }
+
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         //        GodEye.makeEye(with: self.window!)
         //
@@ -34,6 +38,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     static func showAlert(t: String, m: String) {
         let alertController = UIAlertController(title: t, message: m, preferredStyle: .alert)
         alertController.addAction(UIAlertAction(title: "OK", style: .cancel))
-        (UIApplication.shared.delegate as? AppDelegate)?.window?.rootViewController?.present(alertController, animated: true)
+        rootViewController?.present(alertController, animated: true)
     }
 }

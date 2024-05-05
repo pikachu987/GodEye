@@ -74,7 +74,7 @@ import UIKit
 extension FBFile {
     var webBodyString: String? {
         guard let data = try? Data(contentsOf: filePath) else { return nil }
-        let rawString: String? = {
+        let rawString: String = {
             // Prepare plist for display
             if $0 == .PLIST {
                 if let plistDescription = try? (PropertyListSerialization.propertyList(from: data, options: [], format: nil) as AnyObject).description {
@@ -84,7 +84,7 @@ extension FBFile {
                 // Prepare json file for display
                 return pretty
             }
-            return String(data: data, encoding: .utf8)
+            return String(data: data, encoding: .utf8) ?? ""
         }(type)
         return "<pre>\(rawString)</pre>"
     }

@@ -9,7 +9,7 @@
 import Foundation
 
 @objc public protocol NetDelegate: class {
-    @objc optional func networkFlow(_ sender: NetworkFlow, catchWithWifiSend wifiSend: UInt32, wifiReceived: UInt32, wwanSend: UInt32, wwanReceived: UInt32)
+    @objc optional func networkFlow(_ sender: NetworkFlow, catchWithWifiSend wifiSend: UInt64, wifiReceived: UInt64, wwanSend: UInt64, wwanReceived: UInt64)
 }
 
 open class NetworkFlow: NSObject {

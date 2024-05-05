@@ -24,6 +24,20 @@ enum RecordType {
     case command
 }
 
+// MARK: Filter
+extension RecordType {
+    var filterTypes: [RecordORMFilterType] {
+        switch self {
+        case .log: return LogRecordModel.filterTypes
+        case .crash: return CrashRecordModel.filterTypes
+        case .network: return NetworkRecordModel.filterTypes
+        case .anr: return ANRRecordModel.filterTypes
+        case .leak: return LeakRecordModel.filterTypes
+        case .command: return CommandRecordModel.filterTypes
+        }
+    }
+}
+
 // MARK: Unred
 extension RecordType {
     var unread: Int {

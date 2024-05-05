@@ -202,7 +202,7 @@ extension MonitorContainerView {
 }
 
 extension MonitorContainerView: NetDelegate {
-    func networkFlow(_ sender: NetworkFlow, catchWithWifiSend wifiSend: UInt32, wifiReceived: UInt32, wwanSend: UInt32, wwanReceived: UInt32) {
+    func networkFlow(_ sender: NetworkFlow, catchWithWifiSend wifiSend: UInt64, wifiReceived: UInt64, wwanSend: UInt64, wwanReceived: UInt64) {
         DispatchQueue.main.async { [weak self] in
             self?.sysNetView.bind(wifiSend: wifiSend, wifiReceived: wifiReceived, wwanSend: wwanSend, wwanReceived: wwanReceived)
         }

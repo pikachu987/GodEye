@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum LogRecordModelType:Int {
+enum LogRecordModelType: Int, FilterTypeable {
     case asl = 1
     case log = 2
     case warning = 3
@@ -18,8 +18,8 @@ enum LogRecordModelType:Int {
         switch self {
         case .asl: return "ASL"
         case .log: return "LOG"
-        case .warning:return "WARNING"
-        case .error:return "ERROR"
+        case .warning: return "WARNING"
+        case .error: return "ERROR"
         }
     }
     
@@ -30,6 +30,10 @@ enum LogRecordModelType:Int {
         case .warning: return UIColor(hex: 0xFEC42E)
         case .error: return UIColor(hex: 0xDF1921)
         }
+    }
+
+    func equal(filterType: RecordORMFilterType?) -> Bool {
+        filterType?.title == string && filterType?.value == "\(rawValue)"
     }
 }
 

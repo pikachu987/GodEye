@@ -25,6 +25,18 @@ extension UIColor {
     public class var niceJHSRed: UIColor {
         UIColor(red: 235.0/255.0, green: 0.0/255.0, blue: 18.0/255.0, alpha: 1)
     }
+
+    public class var fileBrowserBackground: UIColor {
+        if #available(iOS 13, *) {
+            return .systemBackground
+        } else {
+            return .white
+        }
+    }
+
+    public class var highlight: UIColor {
+        UIColor(red: 255.0/255.0, green: 222.0/255.0, blue: 100.0/255.0, alpha: 1)
+    }
 }
 
 // MARK: - RGB

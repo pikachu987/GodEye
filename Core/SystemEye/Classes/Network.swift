@@ -108,10 +108,10 @@ open class Network: NSObject {
     //--------------------------------------------------------------------------
     // MARK: NETWORK FLOW
     //--------------------------------------------------------------------------
-    public static func flow() -> (wifiSend: UInt32,
-                            wifiReceived: UInt32,
-                                wwanSend: UInt32,
-                            wwanReceived: UInt32) {
+    public static func flow() -> (wifiSend: UInt64,
+                            wifiReceived: UInt64,
+                                wwanSend: UInt64,
+                            wwanReceived: UInt64) {
         let flow = NetObjc.flow()
         return (flow.wifiSend, flow.wifiReceived, flow.wwanSend, flow.wwanReceived)
     }
