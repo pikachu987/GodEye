@@ -1,5 +1,5 @@
 //
-//  WebviewViewContoller.swift
+//  WebViewViewContoller.swift
 //  FileBrowser
 //
 //  Created by Roy Marmelstein on 16/02/2016.
@@ -9,7 +9,17 @@
 import UIKit
 import WebKit
 
-final class WebviewViewContoller: UIViewController {
+final class WebViewViewContoller: UIViewController {
+    private lazy var searchBar: UISearchBar = {
+        $0.translatesAutoresizingMaskIntoConstraints = false
+        $0.searchBarStyle = .minimal
+        $0.backgroundColor = .niceBlack
+        $0.returnKeyType = .done
+        $0.enablesReturnKeyAutomatically = false
+        $0.placeholder = "Search Text"
+        return $0
+    }(UISearchBar())
+    
     private let webView: WKWebView = {
         $0.translatesAutoresizingMaskIntoConstraints = false
         return $0
@@ -22,11 +32,12 @@ final class WebviewViewContoller: UIViewController {
 
     //MARK: Lifecycle
 
-    init(title: String, html: String, shareItem: [Any] = []) {
+    init(title: String, html: String, searchText: String = "", shareItem: [Any] = []) {
         self.titleText = title
         self.htmlText = html
         self.shareItem = shareItem
         super.init(nibName: nil, bundle: nil)
+        searchBar.text = searchText
     }
     
     required init?(coder: NSCoder) {
@@ -58,21 +69,31 @@ final class WebviewViewContoller: UIViewController {
     }
 }
 
-extension WebviewViewContoller {
+extension WebViewViewContoller {
     private func setupViews() {
         view.clipsToBounds = true
+
+        view.addSubview(searchBar)
         view.addSubview(webView)
 
         NSLayoutConstraint.activate([
+            searchBar.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            searchBar.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            searchBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor)
+        ])
+
+        NSLayoutConstraint.activate([
+            webView.topAnchor.constraint(equalTo: searchBar.bottomAnchor),
             webView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             webView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-            webView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             webView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
+
+        searchBar.delegate = self
     }
 }
 
-extension WebviewViewContoller {
+extension WebViewViewContoller {
     @objc private func shareFile(_ sender: UIBarButtonItem) {
         let activityViewController = UIActivityViewController(activityItems: shareItem, applicationActivities: nil)
 
@@ -85,16 +106,45 @@ extension WebviewViewContoller {
     }
 }
 
-extension WebviewViewContoller {
+extension WebViewViewContoller {
+    private var metas: String {
+        let viewport = "<meta name='viewport' content='width=device-width, initial-scale=1'>"
+        let metas = "\(viewport) "
+        return metas
+    }
+
+    private var cssStyle: String {
+        let cssBody = "body {margin: 0px; padding: 0px; background-color: black; color: white;}"
+        let cssP = "p {margin: 0px; padding: 0px;}"
+        let cssSpan = "span {margin: 0px; padding: 0px;}"
+        let cssHighlight = ".highlight { background-color: \(UIColor.highlightBG.hexString()); color: \(UIColor.highlightFG.hexString())}"
+        let style = "<style>\(cssBody) \(cssP) \(cssSpan) \(cssHighlight)</style> "
+        return style
+    }
+
+    private var script: String {
+        let removeHighlight = "document.body.innerHTML = document.body.innerHTML.replace(new RegExp('</?span[^>]*>', 'g'), '');"
+        let insertHighlight = "document.body.innerHTML = document.body.innerHTML.replace(new RegExp(text, 'gi'), '<span class=\"highlight\">$&</span>');"
+        let initialHighlight = (searchBar.text ?? "") == "" ? "" : "highlight('\(searchBar.text ?? "")');"
+        let highlightScript = "function highlight(text) { \(removeHighlight) if(text != '') { \(insertHighlight) } }"
+        let script = "<script>\(highlightScript) \(initialHighlight)</script>"
+        return script
+    }
+
     private func processForDisplay() {
-        let bodyText = htmlText.convertSpecialCharacters
-        let viewport = "<meta name='viewport' content='width=device-width, initial-scale=1'> "
-        let style = "<style>p {margin: 0px; padding: 0px;} span {margin: 0px; padding: 0px;}</style> "
-        let head = "<head>\(viewport)\(style)</head>"
-        let bodyStyle = "'margin: 0px; padding: 0px; background-color: black; color: white;'"
-        let body = "<body style=\(bodyStyle)>\(bodyText)</body>"
+        let content = htmlText.convertSpecialCharacters
+        let head = "<head>\(metas)\(cssStyle)</head>"
+        let body = "<body>\(content)\(script)</body>"
         let html = "<html>\(head)\(body)</html>"
         webView.loadHTMLString(html, baseURL: nil)
+    }
+}
+
+extension WebViewViewContoller: UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        let text = searchBar.text ?? ""
+        webView.evaluateJavaScript("highlight('\(text)');")
+        searchBar.resignFirstResponder()
     }
 }
 

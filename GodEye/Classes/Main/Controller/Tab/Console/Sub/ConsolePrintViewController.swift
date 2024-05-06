@@ -53,7 +53,7 @@ final class ConsolePrintViewController: UIViewController {
 
     private lazy var inputField: UITextField = {
         $0.borderStyle = .roundedRect
-        $0.font = UIFont.courier(with: 12)
+        $0.font = .courier(with: 12)
         $0.autocapitalizationType = .none
         $0.autocorrectionType = .no
         $0.returnKeyType = .done
@@ -196,7 +196,7 @@ extension ConsolePrintViewController: UITextFieldDelegate {
         guard let text = textField.text else { return }
         guard !text.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty else { return }
 
-        GodEyeTabBarController.shared
+        GodEye
             .configuration?
             .command
             .execute(command: text) { [weak self] model in
@@ -293,19 +293,19 @@ extension ConsolePrintViewController: RecordTableViewDelegate {
         guard let indexPath = recordTableView.indexPath(for: cell) else { return }
         let recordData = dataSource.recordData
         guard recordData.indices ~= indexPath.row else { return }
-        guard let html = recordData[indexPath.row].attributeString(type: .detail, filterType: dataSource.filterType, filterText: dataSource.filterText).toHTML else { return }
-        let viewController = WebviewViewContoller(title: "Console", html: html, shareItem: [html])
+        guard let html = recordData[indexPath.row].attributeString(type: .detail).toHTML else { return }
+        let viewController = WebViewViewContoller(title: "Console", html: html, searchText: dataSource.filterText, shareItem: [html])
         navigationController?.pushViewController(viewController, animated: true)
     }
 
     func recordTableView(_ sender: RecordTableViewDataSource, preview model: RecordORMProtocol) {
-        guard let html = model.attributeString(type: .detail, filterType: dataSource.filterType, filterText: dataSource.filterText).toHTML else { return }
-        let viewController = WebviewViewContoller(title: "Console", html: html, shareItem: [html])
+        guard let html = model.attributeString(type: .detail).toHTML else { return }
+        let viewController = WebViewViewContoller(title: "Console", html: html, searchText: dataSource.filterText, shareItem: [html])
         navigationController?.pushViewController(viewController, animated: true)
     }
 
     func recordTableView(_ sender: RecordTableViewDataSource, previewProvider model: RecordORMProtocol) -> UIViewController {
-        let html = model.attributeString(type: .detail, filterType: dataSource.filterType, filterText: dataSource.filterText).toHTML ?? ""
-        return WebviewViewContoller(title: "Console", html: html, shareItem: [html])
+        let html = model.attributeString(type: .detail).toHTML ?? ""
+        return WebViewViewContoller(title: "Console", html: html, searchText: dataSource.filterText, shareItem: [html])
     }
 }

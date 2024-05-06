@@ -89,7 +89,7 @@ public typealias AppPingThreadCallBack = () -> Void
 //--------------------------------------------------------------------------
 private class AppPingThread: Thread {
     
-    func start(threshold:Double, handler: @escaping AppPingThreadCallBack) {
+    func start(threshold: Double, handler: @escaping AppPingThreadCallBack) {
         self.handler = handler
         self.threshold = threshold
         start()

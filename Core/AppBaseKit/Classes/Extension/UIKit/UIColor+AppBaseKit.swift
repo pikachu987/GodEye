@@ -34,8 +34,12 @@ extension UIColor {
         }
     }
 
-    public class var highlight: UIColor {
-        UIColor(red: 255.0/255.0, green: 222.0/255.0, blue: 100.0/255.0, alpha: 1)
+    public class var highlightBG: UIColor {
+        UIColor(red: 129.0/255.0, green: 140.0/255.0, blue: 171.0/255.0, alpha: 1)
+    }
+
+    public class var highlightFG: UIColor {
+        UIColor.white
     }
 }
 

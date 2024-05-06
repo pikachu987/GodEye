@@ -136,7 +136,7 @@ extension RecordORMProtocol {
         }
         complete(true)
     }
-    
+
     static func select(at index: Int, filterType: RecordORMFilterType, filterText: String) -> [Self]? {
         let pagesize = 100
         let offset = pagesize * index + Self.addCount
@@ -144,20 +144,6 @@ extension RecordORMProtocol {
         var select = configure(select: table.select(Self.col_id), filterType: filterType, filterText: filterText)
             .order(Self.col_id.desc)
             .limit(pagesize, offset: offset)
-        
-        print("~~~~~~")
-        if let sequence = try? Self.connection?.prepare("SELECT * FROM sqlite_master where type='table';") {
-            for seq in sequence {
-                print("seq: \(seq)")
-                seq.forEach {
-                    print("seq forEach: \($0)")
-                }
-            }
-            print("sequence.columnCount: \(sequence.columnCount)")
-            print("sequence.columnNames: \(sequence.columnNames)")
-            print("sequence.columnNames: \(sequence.makeIterator())")
-        }
-        print("~~~~~~")
 
         do {
             if let sequence = try Self.connection?.prepare(select) {

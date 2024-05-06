@@ -33,7 +33,7 @@ extension UIWindow {
 
 extension UIResponder {
     @objc func app_motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
-        guard let control = GodEyeTabBarController.shared.configuration?.control else { return }
+        guard let control = GodEye.configuration?.control else { return }
         if control.enabled && control.shakeToShow() {
             if event?.type == UIEvent.EventType.motion && event?.subtype == UIEvent.EventSubtype.motionShake {
                 if GodEyeTabBarController.shared.showing {
@@ -58,7 +58,7 @@ extension UIWindow {
     
     private func canHandle(event: UIEvent) -> Bool {
         guard UIWindow.hookWindow == self else { return false }
-        guard let control = GodEyeTabBarController.shared.configuration?.control else { return false }
+        guard let control = GodEye.configuration?.control else { return false }
 
         if control.enabled && event.type == .touches {
             let touches = event.allTouches

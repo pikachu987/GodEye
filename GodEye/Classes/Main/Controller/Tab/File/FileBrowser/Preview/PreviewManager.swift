@@ -11,7 +11,7 @@ import Foundation
 final class PreviewManager: NSObject {
     func previewViewControllerForFile(_ file: FBFile, fromNavigation: Bool) -> UIViewController {
         if [.PLIST, .JSON].contains(file.type), let webBodyString = file.webBodyString {
-            return WebviewViewContoller(title: file.displayName,
+            return WebViewViewContoller(title: file.displayName,
                                         html: webBodyString,
                                         shareItem: [file.filePath])
         } else {

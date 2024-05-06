@@ -12,7 +12,7 @@ extension ConsoleViewController {
     /// open god's eyes
     func openEyes() {
         EyesManager.shared.delegate = self
-        guard let defaultSwitch = GodEyeTabBarController.shared.configuration?.defaultSwitch else { return }
+        guard let defaultSwitch = GodEye.configuration?.defaultSwitch else { return }
         if defaultSwitch.asl { EyesManager.shared.openASLEye() }
         if defaultSwitch.log4g { EyesManager.shared.openLog4GEye() }
         if defaultSwitch.crash { EyesManager.shared.openCrashEye() }

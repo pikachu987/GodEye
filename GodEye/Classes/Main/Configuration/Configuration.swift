@@ -19,4 +19,6 @@ open class Configuration: NSObject {
     open private(set) var command = CommandConfiguration()
     /// default switch configuration
     open private(set) var defaultSwitch = SwitchConfiguration()
+    /// database names
+    open private(set) var database = DatabaseConfiguration()
 }

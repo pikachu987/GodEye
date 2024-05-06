@@ -9,7 +9,7 @@
 import Foundation
 
 extension NSMutableAttributedString {
-    func highlight(highlightText: String?, highlightColor: UIColor = .highlight) {
+    func highlight(highlightText: String?, highlightBGColor: UIColor = .highlightBG, highlightFGColor: UIColor = .highlightFG) {
         highlightText.map {
             let highlightText = $0.lowercased()
             let text = (string.lowercased() as NSString)
@@ -19,7 +19,8 @@ extension NSMutableAttributedString {
             while (range.location != NSNotFound) {
                 range = text.range(of: highlightText, options: [], range: range)
                 if (range.location != NSNotFound) {
-                    addAttribute(.backgroundColor, value: UIColor.highlight, range: NSRange(location: range.location, length: highlightLength))
+                    addAttribute(.backgroundColor, value: highlightBGColor, range: NSRange(location: range.location, length: highlightLength))
+                    addAttribute(.foregroundColor, value: highlightFGColor, range: NSRange(location: range.location, length: highlightLength))
                     range = NSRange(location: range.location + range.length, length: textLength - (range.location + range.length))
                 }
             }

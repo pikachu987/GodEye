@@ -17,6 +17,13 @@ class ViewController: UIViewController {
         title = "GodEye Feature List"
         view.backgroundColor = UIColor.black
         view.addSubview(tableView)
+
+        NSLayoutConstraint.activate([
+            tableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+        ])
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -30,26 +37,14 @@ class ViewController: UIViewController {
         Log4G.error("just error")
     }
     
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-        tableView.frame = view.bounds
-    }
-    
-    
     private lazy var tableView: UITableView = {
+        $0.translatesAutoresizingMaskIntoConstraints = false
         $0.delegate = self
         $0.dataSource = self
         return $0
     }(UITableView(frame: CGRect.zero, style: .grouped))
 
-    fileprivate lazy var sections: [DemoSection] = {
-        var new = [DemoSection]()
-        new.append(DemoModelFactory.aslSection)
-        new.append(DemoModelFactory.crashSection)
-        new.append(DemoModelFactory.networkSection)
-        new.append(DemoModelFactory.anrSection)
-        return new
-    }()
+    fileprivate lazy var sections = DemoModelFactory.sectionModels
 }
 
 extension ViewController : UITableViewDelegate, UITableViewDataSource {
@@ -68,7 +63,6 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource {
             cell = UITableViewCell(style: .default, reuseIdentifier: identifier)
             cell?.textLabel?.font = UIFont(name: "Courier", size: 12)
         }
-        
         cell!.textLabel?.text = sections[indexPath.section].model[indexPath.row].title
         return cell!
     }
@@ -97,6 +91,3 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource {
         model.action()
     }
 }
-
-
-

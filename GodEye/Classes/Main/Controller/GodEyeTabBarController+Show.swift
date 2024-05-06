@@ -18,7 +18,15 @@ extension GodEyeTabBarController {
         get { objc_getAssociatedObject(self, &Define.Key.Associated.Showing) as? Bool ?? false }
         set { objc_setAssociatedObject(self, &Define.Key.Associated.Showing, newValue, .OBJC_ASSOCIATION_ASSIGN) }
     }
-    
+
+    static func toggle() {
+        if shared.showing {
+            hide()
+        } else {
+            show()
+        }
+    }
+
     static func show() {
         shared.showConsole()
     }
@@ -34,7 +42,6 @@ extension GodEyeTabBarController {
     private func hideConsole() {
         guard showing && !animating else { return }
         animating = true
-        GodEye.show()
         dismiss(animated: true, completion: { [weak self] in
             self?.showing = false
             self?.animating = false
@@ -44,7 +51,6 @@ extension GodEyeTabBarController {
     private func showConsole() {
         guard !showing && !animating else { return }
         animating = true
-        GodEye.hide()
         modalPresentationStyle = .fullScreen
         window?.rootViewController?.present(self, animated: true, completion: { [weak self] in
             self?.showing = true

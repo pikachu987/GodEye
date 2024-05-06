@@ -11,6 +11,8 @@ import Foundation
 open class GodEye: NSObject {
     static var window: UIWindow?
 
+    static var configuration: Configuration?
+
     open class func makeEye(with window: UIWindow, configuration: Configuration = Configuration()) {
         LogRecordModel.create()
         CrashRecordModel.create()
@@ -21,7 +23,7 @@ open class GodEye: NSObject {
         
         self.window = window
         self.window?.hook()
-        GodEyeTabBarController.shared.configuration = configuration
+        self.configuration = configuration
         viewController.show()
     }
 

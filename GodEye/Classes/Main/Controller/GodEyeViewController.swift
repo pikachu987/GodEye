@@ -174,6 +174,10 @@ extension GodEyeViewController {
 }
 
 extension GodEyeViewController {
+    var isShowing: Bool {
+        !(godWindow?.isHidden ?? true)
+    }
+
     func show() {
         makeWindow()
         godWindow?.isHidden = false
@@ -207,7 +211,7 @@ extension GodEyeViewController {
 
     @objc private func tap(_ sender: UITapGestureRecognizer) {
         guard [.recognized].contains(sender.state) else { return }
-        GodEyeTabBarController.show()
+        GodEyeTabBarController.toggle()
     }
 }
 

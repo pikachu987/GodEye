@@ -35,9 +35,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
 
-    static func showAlert(t: String, m: String) {
-        let alertController = UIAlertController(title: t, message: m, preferredStyle: .alert)
-        alertController.addAction(UIAlertAction(title: "OK", style: .cancel))
-        rootViewController?.present(alertController, animated: true)
+    static func showAlert(t: String? = nil, m: String = "Action Complete") {
+        DispatchQueue.main.async {
+            let alertController = UIAlertController(title: t, message: m, preferredStyle: .alert)
+            alertController.addAction(UIAlertAction(title: "OK", style: .cancel))
+            rootViewController?.present(alertController, animated: true)
+        }
     }
 }
