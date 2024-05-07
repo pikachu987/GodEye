@@ -6,7 +6,7 @@
 //
 //
 
-import Foundation
+import UIKit
 
 class MonitorBaseView: UIButton {
     private lazy var contentLabel: UILabel = {

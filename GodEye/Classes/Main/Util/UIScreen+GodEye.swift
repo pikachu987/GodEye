@@ -6,7 +6,7 @@
 //
 //
 
-import Foundation
+import UIKit
 
 extension UIScreen {
     class func onscreenFrame() -> CGRect {

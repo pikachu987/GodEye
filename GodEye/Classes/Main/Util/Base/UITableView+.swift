@@ -6,7 +6,7 @@
 //
 //
 
-import Foundation
+import UIKit
 
 extension UITableView {
     func dequeueReusableCell<E: UITableViewCell>(style: UITableViewCell.CellStyle = .default,
@@ -15,6 +15,8 @@ extension UITableView {
         var cell = dequeueReusableCell(withIdentifier: identifier) as? E
         if cell == nil {
             cell = E(style: style, reuseIdentifier: identifier)
+            bind(cell!)
+        } else {
             bind(cell!)
         }
         return cell!

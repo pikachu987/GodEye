@@ -26,17 +26,6 @@ class ViewController: UIViewController {
         ])
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        Log4G.log("just log")
-        
-        DispatchQueue.global().async {
-            Log4G.warning("just warning")
-        }
-        
-        Log4G.error("just error")
-    }
-    
     private lazy var tableView: UITableView = {
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.delegate = self

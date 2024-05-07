@@ -6,7 +6,7 @@
 //
 //
 
-import Foundation
+import UIKit
 
 extension ConsoleViewController {
     /// open god's eyes

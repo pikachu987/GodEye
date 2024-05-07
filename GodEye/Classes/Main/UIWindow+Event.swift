@@ -6,7 +6,7 @@
 //
 //
 
-import Foundation
+import UIKit
 
 extension UIWindow {
     fileprivate class var hookWindow: UIWindow? {

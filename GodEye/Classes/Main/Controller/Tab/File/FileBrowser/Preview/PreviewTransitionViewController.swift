@@ -8,7 +8,6 @@
 
 import UIKit
 
-
 /// Preview Transition View Controller was created because of a bug in QLPreviewController. It seems that QLPreviewController has issues being presented from a 3D touch peek-pop gesture and is produced an unbalanced presentation warning. By wrapping it in a container, we are solving this issue.
 final class PreviewTransitionViewController: UIViewController {
     lazy var previewController = FBFilePreviewController(filePath: filePath)

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22522" systemVersion="23B81" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
+    <entity name="Entity2" representedClassName="Entity2" syncable="YES" codeGenerationType="class">
+        <attribute name="test1" optional="YES" attributeType="String"/>
+        <attribute name="test2" optional="YES" attributeType="String"/>
+        <attribute name="valueTest" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="EntityTest1" representedClassName="EntityTest1" syncable="YES" codeGenerationType="class">
+        <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="text" optional="YES" attributeType="String"/>
+        <attribute name="valueTest" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+    </entity>
+</model>

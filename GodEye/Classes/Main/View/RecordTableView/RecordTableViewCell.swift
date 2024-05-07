@@ -6,7 +6,7 @@
 //
 //
 
-import Foundation
+import UIKit
 
 protocol RecordTableViewCellDelete: AnyObject {
     func recordTableViewCellTapped(_ sender: RecordTableViewCell)

@@ -6,7 +6,7 @@
 //
 //
 
-import Foundation
+import UIKit
 
 final class ConsoleViewController: UIViewController {
     lazy var tableView: UITableView = {

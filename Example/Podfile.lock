@@ -1,7 +1,8 @@
 PODS:
-  - ESPullToRefresh (2.9.3)
+  - FMDB (2.7.10):
+    - FMDB/standard (= 2.7.10)
+  - FMDB/standard (2.7.10)
   - GodEye (2.0.3):
-    - ESPullToRefresh (~> 2.7)
     - GodEye/ANREye (= 2.0.3)
     - GodEye/AppBaseKit (= 2.0.3)
     - GodEye/ASLEye (= 2.0.3)
@@ -13,42 +14,34 @@ PODS:
     - GodEye/UIThreadEye (= 2.0.3)
     - SQLite.swift (= 0.13.3)
   - GodEye/ANREye (2.0.3):
-    - ESPullToRefresh (~> 2.7)
     - SQLite.swift (= 0.13.3)
   - GodEye/AppBaseKit (2.0.3):
-    - ESPullToRefresh (~> 2.7)
     - SQLite.swift (= 0.13.3)
   - GodEye/ASLEye (2.0.3):
-    - ESPullToRefresh (~> 2.7)
     - SQLite.swift (= 0.13.3)
   - GodEye/CrashEye (2.0.3):
-    - ESPullToRefresh (~> 2.7)
     - SQLite.swift (= 0.13.3)
   - GodEye/LeakEye (2.0.3):
-    - ESPullToRefresh (~> 2.7)
     - SQLite.swift (= 0.13.3)
   - GodEye/Log4G (2.0.3):
-    - ESPullToRefresh (~> 2.7)
     - SQLite.swift (= 0.13.3)
   - GodEye/NetworkEye (2.0.3):
-    - ESPullToRefresh (~> 2.7)
     - SQLite.swift (= 0.13.3)
   - GodEye/SystemEye (2.0.3):
-    - ESPullToRefresh (~> 2.7)
     - SQLite.swift (= 0.13.3)
   - GodEye/UIThreadEye (2.0.3):
-    - ESPullToRefresh (~> 2.7)
     - SQLite.swift (= 0.13.3)
   - SQLite.swift (0.13.3):
     - SQLite.swift/standard (= 0.13.3)
   - SQLite.swift/standard (0.13.3)
 
 DEPENDENCIES:
+  - FMDB (= 2.7.10)
   - GodEye (from `../`)
 
 SPEC REPOS:
   trunk:
-    - ESPullToRefresh
+    - FMDB
     - SQLite.swift
 
 EXTERNAL SOURCES:
@@ -56,10 +49,10 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  ESPullToRefresh: 0d68daa602b343c81753a1b95e09fd0bfcddfd40
-  GodEye: 75429c67270215add4546e9171e34ce2df3b03e7
+  FMDB: eae540775bf7d0c87a5af926ae37af69effe5a19
+  GodEye: 88ac51552400919e4ebe516c3ee54b8fa1c452a3
   SQLite.swift: 903bfa3bc9ab06345fdfbb578e34f47cfcf417da
 
-PODFILE CHECKSUM: f7e610f59983813a85771552af370866e66ae1f8
+PODFILE CHECKSUM: b38bf4c4688f60b06b5c1e0d8acedeca566a3509
 
 COCOAPODS: 1.14.3

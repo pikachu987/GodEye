@@ -6,7 +6,7 @@
 //
 //
 
-import Foundation
+import UIKit
 
 private final class ConsoleTableViewModel: NSObject {
     private(set) var title: String

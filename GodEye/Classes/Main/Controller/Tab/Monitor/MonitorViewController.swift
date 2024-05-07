@@ -6,7 +6,7 @@
 //
 //
 
-import Foundation
+import UIKit
 
 final class MonitorViewController: UIViewController {
     private let scrollView: UIScrollView = {

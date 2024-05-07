@@ -6,7 +6,7 @@
 //
 //
 
-import Foundation
+import UIKit
 
 final class SettingViewController: UIViewController {
     private lazy var tableView: UITableView = {

@@ -8,10 +8,11 @@
 import Foundation
 
 //--------------------------------------------------------------------------
-// MARK: - DatabaseConfiguration
-// DESCRIPTION: Please enter the database you want to view in GodEye.
-// Databases only support sqlite, fmdb, and coredata.
+// MARK: - StorageConfiguration
+// DESCRIPTION: Please enter the storage you want to view in GodEye.
+// storage only support database(sqlite or fmdb or db...), and coredata.
 //--------------------------------------------------------------------------
-open class DatabaseConfiguration: NSObject {
-    open var sqliteNames: [String] = []
+open class StorageConfiguration: NSObject {
+    open var databasePaths: [String] = []
+    open var coreDataNames: [String] = []
 }

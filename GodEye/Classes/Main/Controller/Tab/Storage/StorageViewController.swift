@@ -5,7 +5,7 @@
 //  Created by USER on 5/6/24.
 //
 
-import Foundation
+import UIKit
 
 final class StorageViewController: UIViewController {
     private lazy var tableView: UITableView = {
@@ -79,12 +79,24 @@ extension StorageViewController: UITableViewDataSource, UITableViewDelegate {
         tableView.deselectRow(at: indexPath, animated: true)
         let model = models[indexPath.row]
         switch model {
+        case .database:
+            var models = [StorageDatabaseModel(databasePath: RecordDatabase.databasePath)]
+            GodEye.configuration.map { $0.storage.databasePaths.map { StorageDatabaseModel(databasePath: $0) } }.map {
+                models.append(contentsOf: $0)
+            }
+            let viewController = StorageListViewController(title: "Database", storageModels: models)
+            navigationController?.pushViewController(viewController, animated: true)
+        case .coreData:
+            let models = GodEye.configuration.map { $0.storage.coreDataNames.map { StorageCoreDataModel(coreDataName: $0) } } ?? []
+            let viewController = StorageListViewController(title: "CoreData", storageModels: models)
+            navigationController?.pushViewController(viewController, animated: true)
         case .userDefaults:
             let html = UserDefaults.standard.dictionaryRepresentation().toHTML
             let viewController = WebViewViewContoller(title: "UserDefaults", html: html, shareItem: [html])
             navigationController?.pushViewController(viewController, animated: true)
-        case .sqlite:
-            let viewController = StorageSQLiteViewController()
+        case .info:
+            let html = Bundle.main.infoDictionary?.toHTML ?? ""
+            let viewController = WebViewViewContoller(title: "Info.plist", html: html, shareItem: [html])
             navigationController?.pushViewController(viewController, animated: true)
         }
     }
@@ -92,13 +104,17 @@ extension StorageViewController: UITableViewDataSource, UITableViewDelegate {
 
 extension StorageViewController {
     enum StorageType: CaseIterable {
+        case database
+        case coreData
         case userDefaults
-        case sqlite
+        case info
 
         var title: String {
             switch self {
+            case .database: return "Database"
+            case .coreData: return "CoreData"
             case .userDefaults: return "UserDefaults"
-            case .sqlite: return "SQLite"
+            case .info: return "Info.plist"
             }
         }
     }

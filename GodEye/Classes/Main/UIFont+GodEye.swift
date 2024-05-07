@@ -6,7 +6,7 @@
 //
 //
 
-import Foundation
+import UIKit
 
 extension UIFont {
     class func courier(with size: CGFloat) -> UIFont {

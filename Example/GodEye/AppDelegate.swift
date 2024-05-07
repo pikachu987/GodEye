@@ -8,6 +8,7 @@
 
 import UIKit
 import GodEye
+import CoreData
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -19,10 +20,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        //        GodEye.makeEye(with: self.window!)
-        //
-        
-        
         let configuration = Configuration()
         configuration.command.add(command: "test", description: "test command") { () -> (String) in
             return "this is test command result"
@@ -30,8 +27,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         configuration.command.add(command: "info", description: "print test info") { () -> (String) in
             return "info"
         }
-        
+        configuration.storage.databasePaths.append(FMDBManager.shared.databasePath)
+        configuration.storage.coreDataNames.append(contentsOf: ["CoreData", "Test"])
+
         GodEye.makeEye(with: self.window!, configuration: configuration)
+
         return true
     }
 

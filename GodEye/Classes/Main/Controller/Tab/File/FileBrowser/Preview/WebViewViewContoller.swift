@@ -28,7 +28,7 @@ final class WebViewViewContoller: UIViewController {
     private let titleText: String
     private let htmlText: String
     private let shareItem: [Any]
-    private var isPrevPopGestureEnabled = true
+    private var isPrevPopGestureEnabled: Bool = true
 
     //MARK: Lifecycle
 
@@ -38,6 +38,7 @@ final class WebViewViewContoller: UIViewController {
         self.shareItem = shareItem
         super.init(nibName: nil, bundle: nil)
         searchBar.text = searchText
+        isPrevPopGestureEnabled = navigationController?.interactivePopGestureRecognizer?.isEnabled ?? true
     }
     
     required init?(coder: NSCoder) {
@@ -58,7 +59,6 @@ final class WebViewViewContoller: UIViewController {
 
         navigationItem.title = titleText
         navigationItem.rightBarButtonItem = shareItem.isEmpty ? nil : UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(shareFile(_:)))
-        isPrevPopGestureEnabled = navigationController?.interactivePopGestureRecognizer?.isEnabled ?? true
         navigationController?.interactivePopGestureRecognizer?.isEnabled = false
     }
 

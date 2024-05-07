@@ -14,6 +14,8 @@
 		607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDE1AFB9204008FA782 /* LaunchScreen.xib */; };
 		607FACEC1AFB9204008FA782 /* Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* Tests.swift */; };
 		B6E37A050F0590D935EBF864 /* Pods_GodEye_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 383D3B63779644E8A870428B /* Pods_GodEye_Tests.framework */; };
+		CE12DFE42BEA239A001D5A0D /* CoreData.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = CE12DFE22BEA239A001D5A0D /* CoreData.xcdatamodeld */; };
+		CE2804FB2BEA6EC900E355DD /* Test.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = CE2804F92BEA6EC900E355DD /* Test.xcdatamodeld */; };
 		ED8B2AC7A65AC4302DE66294 /* Pods_GodEye_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 459AEFEA61290F4002CA133D /* Pods_GodEye_Example.framework */; };
 		EEF0D678222C20D40087D9F1 /* DemoModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEF0D677222C20D40087D9F1 /* DemoModel.swift */; };
 /* End PBXBuildFile section */
@@ -46,6 +48,8 @@
 		618526A5BFD5BA39B410F7FF /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		7272EC9B06E9180202B03271 /* Pods-GodEye_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GodEye_Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GodEye_Tests/Pods-GodEye_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		728432048FBF3967CDFA3F0C /* Pods-GodEye_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GodEye_Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-GodEye_Tests/Pods-GodEye_Tests.release.xcconfig"; sourceTree = "<group>"; };
+		CE12DFE32BEA239A001D5A0D /* CoreData.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CoreData.xcdatamodel; sourceTree = "<group>"; };
+		CE2804FA2BEA6EC900E355DD /* Test.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Test.xcdatamodel; sourceTree = "<group>"; };
 		DAA030F1FA108B31641510BF /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		DD2FC47ED32D6B7E3953C136 /* Pods-GodEye_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GodEye_Example.release.xcconfig"; path = "Pods/Target Support Files/Pods-GodEye_Example/Pods-GodEye_Example.release.xcconfig"; sourceTree = "<group>"; };
 		EEF0D677222C20D40087D9F1 /* DemoModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DemoModel.swift; sourceTree = "<group>"; };
@@ -112,6 +116,8 @@
 				607FACD91AFB9204008FA782 /* Main.storyboard */,
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
 				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
+				CE12DFE22BEA239A001D5A0D /* CoreData.xcdatamodeld */,
+				CE2804F92BEA6EC900E355DD /* Test.xcdatamodeld */,
 				607FACD31AFB9204008FA782 /* Supporting Files */,
 			);
 			name = "Example for GodEye";
@@ -310,13 +316,13 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-GodEye_Example/Pods-GodEye_Example-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/ESPullToRefresh/ESPullToRefresh.framework",
+				"${BUILT_PRODUCTS_DIR}/FMDB/FMDB.framework",
 				"${BUILT_PRODUCTS_DIR}/GodEye/GodEye.framework",
 				"${BUILT_PRODUCTS_DIR}/SQLite.swift/SQLite.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ESPullToRefresh.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FMDB.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GodEye.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SQLite.framework",
 			);
@@ -333,7 +339,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				607FACD81AFB9204008FA782 /* ViewController.swift in Sources */,
+				CE2804FB2BEA6EC900E355DD /* Test.xcdatamodeld in Sources */,
 				EEF0D678222C20D40087D9F1 /* DemoModel.swift in Sources */,
+				CE12DFE42BEA239A001D5A0D /* CoreData.xcdatamodeld in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -590,6 +598,29 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		CE12DFE22BEA239A001D5A0D /* CoreData.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				CE12DFE32BEA239A001D5A0D /* CoreData.xcdatamodel */,
+			);
+			currentVersion = CE12DFE32BEA239A001D5A0D /* CoreData.xcdatamodel */;
+			path = CoreData.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+		CE2804F92BEA6EC900E355DD /* Test.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				CE2804FA2BEA6EC900E355DD /* Test.xcdatamodel */,
+			);
+			currentVersion = CE2804FA2BEA6EC900E355DD /* Test.xcdatamodel */;
+			path = Test.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 607FACC81AFB9204008FA782 /* Project object */;
 }

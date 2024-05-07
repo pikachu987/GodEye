@@ -9,6 +9,8 @@
 import Foundation
 import UIKit
 import GodEye
+import FMDB
+import CoreData
 
 class DemoModel: NSObject {
     let title: String
@@ -41,8 +43,7 @@ class DemoModelFactory: NSObject {
         sectionModels.append(fileSection)
         sectionModels.append(userDefaultsSection)
         sectionModels.append(coreDataSection)
-        sectionModels.append(sqliteSection)
-        sectionModels.append(fmdbSection)
+        sectionModels.append(dbSection)
 
         return sectionModels
     }()
@@ -55,6 +56,7 @@ extension DemoModelFactory {
     private static var logSection: DemoSection {
         var models = [DemoModel]()
         models.append(logAslModel)
+        models.append(logDefaultModel)
         models.append(logMultipleModel)
         models.append(logTimeIntervalModel)
         models.append(logExceptionCrashModel)
@@ -67,6 +69,15 @@ extension DemoModelFactory {
     private static var logAslModel: DemoModel {
         DemoModel(title: "ASL NSLog") {
             NSLog("test")
+            AppDelegate.showAlert()
+        }
+    }
+
+    private static var logDefaultModel: DemoModel {
+        DemoModel(title: "Default Log4G") {
+            Log4G.log("just log")
+            Log4G.warning("just warning")
+            Log4G.error("just error")
             AppDelegate.showAlert()
         }
     }
@@ -285,6 +296,7 @@ extension DemoModelFactory {
             UserDefaults.standard.setValue(123123123, forKey: "test4")
             UserDefaults.standard.setValue(true, forKey: "test5")
             UserDefaults.standard.setValue(1.232213134538954, forKey: "test6")
+            AppDelegate.showAlert()
         }
     }
 
@@ -321,22 +333,149 @@ extension DemoModelFactory {
 extension DemoModelFactory {
     static var coreDataSection: DemoSection {
         var models = [DemoModel]()
+        models.append(coreDataInsertModel)
         return DemoSection(header: "CoreData", model: models)
     }
-}
 
-// MARK: SQLite
-extension DemoModelFactory {
-    static var sqliteSection: DemoSection {
-        var models = [DemoModel]()
-        return DemoSection(header: "SQLite", model: models)
+    private static var coreDataInsertModel: DemoModel {
+        DemoModel(title: "Insert Rows") {
+            CoreDataManager().testInsert()
+            AppDelegate.showAlert()
+        }
     }
 }
 
-// MARK: FMDB
+// MARK: Database
 extension DemoModelFactory {
-    static var fmdbSection: DemoSection {
+    static var dbSection: DemoSection {
         var models = [DemoModel]()
-        return DemoSection(header: "FMDB", model: models)
+        models.append(dbCreateTableModel)
+        models.append(dbInsertRowsModel)
+        return DemoSection(header: "Database", model: models)
+    }
+
+    private static var dbCreateTableModel: DemoModel {
+        DemoModel(title: "Create Table IfNeeded") {
+            FMDBManager.shared.testCreate()
+            AppDelegate.showAlert()
+        }
+    }
+
+    private static var dbInsertRowsModel: DemoModel {
+        DemoModel(title: "Insert Rows") {
+            FMDBManager.shared.testInsert()
+            AppDelegate.showAlert()
+        }
+    }
+}
+
+class CoreDataManager {
+    private lazy var persistentContainerWithCoreData: NSPersistentContainer = {
+        let container = NSPersistentContainer(name: "CoreData")
+        container.loadPersistentStores { NSPersistentStoreDescription, error in
+            if let error = error as NSError? {
+                fatalError("Unresolved error \(error), \(error.userInfo)")
+            }
+        }
+        return container
+    }()
+
+    private lazy var persistentContainerWithTest: NSPersistentContainer = {
+        let container = NSPersistentContainer(name: "Test")
+        container.loadPersistentStores { NSPersistentStoreDescription, error in
+            if let error = error as NSError? {
+                fatalError("Unresolved error \(error), \(error.userInfo)")
+            }
+        }
+        return container
+    }()
+
+    func testInsert() {
+        testInsertTest1()
+        testInsertTest2()
+        testInsertTest3()
+    }
+
+    private func testInsertTest1() {
+        if let entity = NSEntityDescription.entity(forEntityName: "EntityTest1", in: persistentContainerWithCoreData.viewContext) {
+            for i in 0...1000 {
+                let entityTest1Model1 = NSManagedObject(entity: entity, insertInto: persistentContainerWithCoreData.viewContext)
+                entityTest1Model1.setValue(Date(), forKey: "date")
+                entityTest1Model1.setValue("text-\(i)", forKey: "text")
+                entityTest1Model1.setValue(Double(i) * 1.2313, forKey: "valueTest")
+            }
+            try? persistentContainerWithCoreData.viewContext.save()
+        }
+    }
+
+    private func testInsertTest2() {
+        if let entity = NSEntityDescription.entity(forEntityName: "Entity2", in: persistentContainerWithCoreData.viewContext) {
+            for i in 0...1000 {
+                let entityTest1Model1 = NSManagedObject(entity: entity, insertInto: persistentContainerWithCoreData.viewContext)
+                entityTest1Model1.setValue("test1: \(i)", forKey: "test1")
+                entityTest1Model1.setValue("valueTest: \(i)", forKey: "valueTest")
+            }
+            try? persistentContainerWithCoreData.viewContext.save()
+        }
+    }
+
+    private func testInsertTest3() {
+        if let entity = NSEntityDescription.entity(forEntityName: "TestData", in: persistentContainerWithTest.viewContext) {
+            for i in 0...10000 {
+                let entityTest1Model1 = NSManagedObject(entity: entity, insertInto: persistentContainerWithTest.viewContext)
+                entityTest1Model1.setValue("test1: \(i)", forKey: "test1")
+                entityTest1Model1.setValue("test2: \(i)", forKey: "test2")
+                entityTest1Model1.setValue("test3: \(i)", forKey: "test3")
+                entityTest1Model1.setValue("test4: \(i)", forKey: "test4")
+                entityTest1Model1.setValue("test5: \(i)", forKey: "test5")
+            }
+            try? persistentContainerWithTest.viewContext.save()
+        }
+    }
+}
+
+class FMDBManager {
+    static let shared = FMDBManager()
+
+    private let resourceName = "GodEye.db"
+
+    lazy var databasePath: String = {
+        AppPathForDocumentsResource(relativePath: resourceName)
+    }()
+
+    private lazy var database: FMDatabase = {
+        FMDatabase(path: databasePath)
+    }()
+
+    func testCreate() {
+        execute(query: testCreateTable(tableName: "DBTest1"))
+        execute(query: testCreateTable(tableName: "DBTest2"))
+        execute(query: testCreateTable(tableName: "DBTest3"))
+    }
+
+    func testInsert() {
+        for i in 0...100 {
+            execute(query: testInsertRow(tableName: "DBTest1", title: "Test\(i)"))
+        }
+        for i in 0...1000 {
+            execute(query: testInsertRow(tableName: "DBTest2", title: "Test\(i)"))
+        }
+    }
+
+    private func testCreateTable(tableName: String) -> String {
+        "CREATE TABLE IF NOT EXISTS \(tableName) (" +
+            "SEQ INTEGER PRIMARY KEY AUTOINCREMENT," +
+            "TITLE VARCHAR," +
+            "CREATE_DATE DOUBLE" +
+            ");"
+    }
+
+    private func testInsertRow(tableName: String, title: String) -> String {
+        "INSERT INTO \(tableName) (TITLE, CREATE_DATE) VALUES (\"\(title)\", \"\(Date())\");"
+    }
+
+    private func execute(query: String) {
+        if !database.isOpen && !database.open() { return }
+        database.executeStatements(query)
     }
 }

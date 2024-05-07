@@ -102,6 +102,4 @@ extension FileListViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         allowEditing
     }
-    
-    
 }

@@ -4,6 +4,7 @@ inhibit_all_warnings!
 
 target 'GodEye_Example' do
   pod 'GodEye', :path => '../'
+  pod 'FMDB', '2.7.10'
 
   target 'GodEye_Tests' do
     inherit! :search_paths

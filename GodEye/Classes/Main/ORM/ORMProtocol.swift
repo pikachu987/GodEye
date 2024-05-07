@@ -193,10 +193,9 @@ extension RecordORMProtocol {
     fileprivate static var connection: Connection? {
         get {
             var key = "\(#file)+\(#line)"
-            let path = AppPathForDocumentsResource(relativePath: "/GodEye.sqlite")
             do {
                 guard let result = objc_getAssociatedObject(self, &key) as? Connection else {
-                    let result = try Connection(path)
+                    let result = try Connection(RecordDatabase.databasePath)
                     objc_setAssociatedObject(self, &key, result, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
                     return result
                 }

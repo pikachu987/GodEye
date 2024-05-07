@@ -20,5 +20,5 @@ open class Configuration: NSObject {
     /// default switch configuration
     open private(set) var defaultSwitch = SwitchConfiguration()
     /// database names
-    open private(set) var database = DatabaseConfiguration()
+    open private(set) var storage = StorageConfiguration()
 }
