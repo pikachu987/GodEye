@@ -32,6 +32,8 @@ final class ConsolePrintViewController: UIViewController {
     }(UIStackView(arrangedSubviews: [topStackView, recordTableView, inputField, keyboardView]))
 
     private lazy var topStackView: UIStackView = {
+        $0.translatesAutoresizingMaskIntoConstraints = false
+        $0.axis = .horizontal
         return $0
     }(UIStackView(arrangedSubviews: [searchContainerView, filterView]))
 
@@ -156,6 +158,8 @@ extension ConsolePrintViewController {
 
 extension ConsolePrintViewController {
     private func share(text: String) {
+        searchBar.resignFirstResponder()
+        inputField.resignFirstResponder()
         let activity = UIActivityViewController(activityItems: [text], applicationActivities: nil)
         if let popover = activity.popoverPresentationController {
             popover.sourceView = view
@@ -165,12 +169,16 @@ extension ConsolePrintViewController {
     }
 
     @objc private func handleSharedButtonTap() {
+        searchBar.resignFirstResponder()
+        inputField.resignFirstResponder()
         recordTableView.didUserInteraction()
         let text = dataSource.recordData.map { $0.attributeString(type: .detail).string }.joined(separator: "\n")
         share(text: text)
     }
 
     @objc private func handleDeleteButtonTap() {
+        searchBar.resignFirstResponder()
+        inputField.resignFirstResponder()
         recordTableView.didUserInteraction()
         type.model()?.delete(complete: { [weak self] _ in
             self?.dataSource.cleanRecord()
@@ -179,6 +187,8 @@ extension ConsolePrintViewController {
 
     @objc private func filterTapped(_ sender: UITapGestureRecognizer) {
         guard sender.state == .recognized else { return }
+        searchBar.resignFirstResponder()
+        inputField.resignFirstResponder()
         let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         alertController.addAction(.init(title: "Cancel", style: .cancel))
         type.filterTypes.forEach { filterType in

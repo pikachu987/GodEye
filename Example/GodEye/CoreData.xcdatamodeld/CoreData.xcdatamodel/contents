@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22522" systemVersion="23B81" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
     <entity name="Entity2" representedClassName="Entity2" syncable="YES" codeGenerationType="class">
+        <attribute name="attribute1" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="attribute2" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="attribute3" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="attribute4" optional="YES" attributeType="Decimal" defaultValueString="0.0"/>
+        <attribute name="attribute5" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="attribute6" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="attribute7" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="attribute8" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="attribute9" optional="YES" attributeType="Binary"/>
+        <attribute name="attribute10" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="attribute11" optional="YES" attributeType="URI"/>
+        <attribute name="attribute12" optional="YES" attributeType="Transformable" valueTransformerName="[String]"/>
+        <attribute name="attribute13" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="test1" optional="YES" attributeType="String"/>
         <attribute name="test2" optional="YES" attributeType="String"/>
         <attribute name="valueTest" optional="YES" attributeType="String"/>

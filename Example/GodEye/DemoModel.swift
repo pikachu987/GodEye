@@ -83,7 +83,7 @@ extension DemoModelFactory {
     }
 
     private static var logMultipleModel: DemoModel {
-        DemoModel(title: "Send log 1~100") {
+        DemoModel(title: "Send log 1~1000") {
             let alertController = UIAlertController(title: nil, message: "log prefix", preferredStyle: .alert)
             alertController.addAction(.init(title: "Cancel", style: .cancel))
             alertController.addTextField { textField in
@@ -91,7 +91,7 @@ extension DemoModelFactory {
             }
             alertController.addAction(.init(title: "Send", style: .default, handler: { _ in
                 let text = alertController.textFields?.first?.text ?? ""
-                Array(0..<100).forEach {
+                Array(0..<1000).forEach {
                     Log4G.log("\(text)-\($0)")
                 }
                 AppDelegate.showAlert()
@@ -409,11 +409,28 @@ class CoreDataManager {
     }
 
     private func testInsertTest2() {
+        let view = UIView()
+        view.frame = .init(x: 0, y: 0, width: 100, height: 100)
+        view.backgroundColor = .blue
+        let imageData = view.imageWithView?.pngData()
         if let entity = NSEntityDescription.entity(forEntityName: "Entity2", in: persistentContainerWithCoreData.viewContext) {
             for i in 0...1000 {
                 let entityTest1Model1 = NSManagedObject(entity: entity, insertInto: persistentContainerWithCoreData.viewContext)
+                entityTest1Model1.setValue(Int16(i), forKey: "attribute1")
+                entityTest1Model1.setValue(Int32(i * 2), forKey: "attribute2")
+                entityTest1Model1.setValue(Int64(i * 3), forKey: "attribute3")
+                entityTest1Model1.setValue(Decimal(i * 5), forKey: "attribute4")
+                entityTest1Model1.setValue(1.232 * Double(i), forKey: "attribute5")
+                entityTest1Model1.setValue(1.555 * Float(i), forKey: "attribute6")
+                entityTest1Model1.setValue(true, forKey: "attribute7")
+                entityTest1Model1.setValue(Date(), forKey: "attribute8")
+                entityTest1Model1.setValue(imageData, forKey: "attribute9")
+                entityTest1Model1.setValue(UUID(), forKey: "attribute10")
+                entityTest1Model1.setValue(URL(string: "http://www.naver.com")!, forKey: "attribute11")
+                entityTest1Model1.setValue(["aaaa\(i)", "bbbb"], forKey: "attribute12")
+                entityTest1Model1.setValue(false, forKey: "attribute13")
                 entityTest1Model1.setValue("test1: \(i)", forKey: "test1")
-                entityTest1Model1.setValue("valueTest: \(i)", forKey: "valueTest")
+                entityTest1Model1.setValue("valueTest: \(i) valueTest: \(i) valueTest: \(i) valueTest: \(i) valueTest: \(i) valueTest: \(i) valueTest: \(i) valueTest: \(i) valueTest: \(i) valueTest: \(i) valueTest: \(i) valueTest: \(i) valueTest: \(i) valueTest: \(i) valueTest: \(i)", forKey: "valueTest")
             }
             try? persistentContainerWithCoreData.viewContext.save()
         }
@@ -477,5 +494,18 @@ class FMDBManager {
     private func execute(query: String) {
         if !database.isOpen && !database.open() { return }
         database.executeStatements(query)
+    }
+}
+
+extension UIView {
+    var imageWithView: UIImage? {
+        UIGraphicsBeginImageContextWithOptions(bounds.size, isOpaque, 0.0)
+        if let cgContext = UIGraphicsGetCurrentContext() {
+            layer.render(in: cgContext)
+        }
+        drawHierarchy(in: bounds, afterScreenUpdates: true)
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return image
     }
 }

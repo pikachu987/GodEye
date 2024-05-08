@@ -7,7 +7,13 @@
 
 import UIKit
 
+protocol StorageRowCellDelete: AnyObject {
+    func storageRowColumnTap(_ sender: StorageRowCell, index: Int)
+}
+
 final class StorageRowCell: UITableViewCell {
+    weak var delegate: StorageRowCellDelete?
+
     private lazy var stackView: UIStackView = {
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.axis = .horizontal
@@ -41,7 +47,8 @@ final class StorageRowCell: UITableViewCell {
         if stackView.arrangedSubviews.count - 1 != model.widths.count {
             stackView.subviews.forEach { $0.removeFromSuperview() }
             model.widths.map { width in
-                let view = FieldView(font: model.font, horizontalMargin: model.horizontalMargin, isColumn: model.isColumn)
+                let view = FieldButton(font: model.font, horizontalMargin: model.horizontalMargin, isColumn: model.isColumn)
+                view.addTarget(self, action: #selector(buttonTap(_:)), for: .touchUpInside)
                 view.widthAnchor.constraint(equalToConstant: width + model.horizontalMargin * 2).isActive = true
                 return view
             }.forEach {
@@ -50,15 +57,24 @@ final class StorageRowCell: UITableViewCell {
             stackView.addArrangedSubview(UIView())
         }
         model.values.enumerated().forEach {
-            let fieldView = stackView.arrangedSubviews.compactMap({ $0 as? FieldView })[$0.offset]
-            fieldView.text = $0.element
-            fieldView.isFull = model.isFull
+            let fieldButton = stackView.arrangedSubviews.compactMap({ $0 as? FieldButton })[$0.offset]
+            let attributedString = NSMutableAttributedString(string: $0.element, attributes: [.font: model.font])
+            if !model.isColumn && $0.offset == model.filterIndex {
+                attributedString.highlight(highlightText: model.filterText)
+            }
+            fieldButton.attributedText = attributedString
+            fieldButton.isFull = model.isFull
         }
+    }
+
+    @objc private func buttonTap(_ sender: UIButton) {
+        guard let index = stackView.arrangedSubviews.firstIndex(where: { $0 == sender }) else { return }
+        delegate?.storageRowColumnTap(self, index: index)
     }
 }
 
 extension StorageRowCell {
-    final class FieldView: UIView {
+    final class FieldButton: UIButton {
         private let label: UILabel = {
             $0.translatesAutoresizingMaskIntoConstraints = false
             $0.textColor = .white
@@ -66,6 +82,7 @@ extension StorageRowCell {
             return $0
         }(UILabel())
 
+        override var buttonType: UIButton.ButtonType { .system }
         private let horizontalMargin: CGFloat
 
         init(font: UIFont, horizontalMargin: CGFloat, isColumn: Bool) {
@@ -78,6 +95,7 @@ extension StorageRowCell {
                 label.font = font
             }
             label.textAlignment = isColumn ? .center : .left
+            isUserInteractionEnabled = isColumn
             setupViews()
         }
 
@@ -96,9 +114,15 @@ extension StorageRowCell {
             ])
         }
 
-        var text: String {
-            set { label.text = newValue }
-            get { label.text ?? "" }
+        override var isHighlighted: Bool {
+            didSet {
+                alpha = isHighlighted ? 0.3 : 1
+            }
+        }
+
+        var attributedText: NSAttributedString {
+            set { label.attributedText = newValue }
+            get { label.attributedText ?? .init() }
         }
 
         var isFull: Bool {

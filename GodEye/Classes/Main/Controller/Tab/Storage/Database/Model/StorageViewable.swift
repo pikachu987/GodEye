@@ -14,48 +14,51 @@ private enum ViewerConstant {
 
 protocol StorageViewable {
     var title: String { get }
-    var columnList: [String] { get }
+    var columnList: [(String, Bool?)] { set get }
     var standardRowList: [String] { get }
-    var rowList: [[String]] { get }
+    var rowModels: [StorageRowModel] { set get }
+    var filterList: [String] { get }
+    func refresh(_ completion: @escaping (() -> Void))
+    func loadMore(_ completion: @escaping (() -> Void))
 }
 
 extension StorageViewable {
-    var columnModel: StorageRowModel {
+    var filterType: String {
         get {
-            guard let result = objc_getAssociatedObject(self, &columnModelKey) as? StorageRowModel else {
-                let result = StorageRowModel(values: columnList,
-                                widths: columnWidths,
-                                font: ViewerConstant.font,
-                                horizontalMargin: ViewerConstant.horizontalMargin,
-                                isColumn: true)
-                objc_setAssociatedObject(self, &columnModelKey, result, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-                return result
+            guard let value = objc_getAssociatedObject(self, &filterTypeKey) as? String else {
+                let value = ""
+                objc_setAssociatedObject(self, &filterTypeKey, value, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+                return value
             }
-            return result
+            return value
         }
         set {
-            objc_setAssociatedObject(self, &columnModelKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            objc_setAssociatedObject(self, &filterTypeKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
     }
 
-    var rowModels: [StorageRowModel] {
+    var filterText: String {
         get {
-            guard let result = objc_getAssociatedObject(self, &rowModelsKey) as? [StorageRowModel] else {
-                let result = rowList.map {
-                    StorageRowModel(values: $0,
-                                    widths: columnWidths,
-                                    font: ViewerConstant.font,
-                                    horizontalMargin: ViewerConstant.horizontalMargin,
-                                    isColumn: false)
-                }
-                objc_setAssociatedObject(self, &rowModelsKey, result, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-                return result
+            guard let value = objc_getAssociatedObject(self, &filterTextKey) as? String else {
+                let value = ""
+                objc_setAssociatedObject(self, &filterTextKey, value, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+                return value
             }
-            return result
+            return value
         }
         set {
-            objc_setAssociatedObject(self, &rowModelsKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            objc_setAssociatedObject(self, &filterTextKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
+    }
+
+    var columnModel: StorageRowModel {
+        StorageRowModel(values: columnAndArrowList,
+                        widths: columnWidths,
+                        font: ViewerConstant.font,
+                        horizontalMargin: ViewerConstant.horizontalMargin,
+                        isColumn: true,
+                        filterIndex: columnList.map { $0.0 }.firstIndex(where: { $0 == filterType }) ?? 0,
+                        filterText: filterText)
     }
 
     var rowCount: Int {
@@ -66,17 +69,68 @@ extension StorageViewable {
         columnWidths.reduce(0, +) + (CGFloat(columnWidths.count) * (ViewerConstant.horizontalMargin * 2))
     }
 
+    var filterList: [String] {
+        columnList.map { $0.0 }
+    }
+
     mutating func toggleTap(index: Int) {
         rowModels[index].isFull = !rowModels[index].isFull
+    }
+
+    mutating func columnTap(index: Int, completion: @escaping (() -> Void)) {
+        for i in 0..<columnList.count where i != index {
+            columnList[i].1 = nil
+        }
+        if let value = columnList[index].1 {
+            if !value {
+                columnList[index].1 = !value
+            } else {
+                columnList[index].1 = nil
+            }
+        } else {
+            columnList[index].1 = false
+        }
+        refresh {
+            completion()
+        }
+    }
+
+    mutating func changeFilterType(_ filterType: String, completion: (() -> Void)?) {
+        self.filterType = filterType
+        refresh {
+            completion?()
+        }
+    }
+
+    mutating func changeFilterText(_ filterText: String, completion: @escaping (() -> Void)) {
+        self.filterText = filterText
+        refresh {
+            completion()
+        }
+    }
+
+    func makeRowModels(valuesList: [[String]]) -> [StorageRowModel] {
+        valuesList.map {
+            StorageRowModel(values: $0,
+                            widths: columnWidths,
+                            font: ViewerConstant.font,
+                            horizontalMargin: ViewerConstant.horizontalMargin,
+                            isColumn: false,
+                            filterIndex: columnList.map { $0.0 }.firstIndex(where: { $0 == filterType }) ?? 0,
+                            filterText: filterText)
+        }
     }
 }
 
 extension StorageViewable {
-    private var columnWidths: [CGFloat] {
+    var columnAndArrowList: [String] {
+        columnList.map { $0.0.appending(" \($0.1 ?? true ? "▼" : "▲")") }
+    }
+    var columnWidths: [CGFloat] {
         var key = "\(#file)+\(#line)"
         guard let result = objc_getAssociatedObject(self, &key) as? [CGFloat] else {
             var widths = [CGFloat]()
-            for (index, column) in columnList.enumerated() {
+            for (index, column) in columnAndArrowList.enumerated() {
                 let rowField: String
                 if standardRowList.indices ~= index {
                     rowField = standardRowList[index]
@@ -94,5 +148,5 @@ extension StorageViewable {
     }
 }
 
-private var rowModelsKey: UInt8 = 0
-private var columnModelKey: UInt8 = 0
+private var filterTypeKey: UInt8 = 0
+private var filterTextKey: UInt8 = 0

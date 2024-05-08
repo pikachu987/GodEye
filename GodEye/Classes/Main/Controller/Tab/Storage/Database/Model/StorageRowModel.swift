@@ -13,6 +13,8 @@ struct StorageRowModel {
     let font: UIFont
     let horizontalMargin: CGFloat
     let isColumn: Bool
+    let filterIndex: Int
+    let filterText: String
 
     var isFull: Bool = false
 }
