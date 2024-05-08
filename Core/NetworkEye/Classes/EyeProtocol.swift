@@ -8,8 +8,6 @@
 
 import Foundation
 
-
-
 class EyeProtocol: URLProtocol {
     
     class func open() {

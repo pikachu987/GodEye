@@ -34,11 +34,6 @@ extension GodEyeTabBarController {
     static func hide() {
         shared.hideConsole()
     }
-    
-    private var window: UIWindow? {
-        GodEye.window ?? UIApplication.shared.mainWindow()
-    }
-
     private func hideConsole() {
         guard showing && !animating else { return }
         animating = true
@@ -52,7 +47,7 @@ extension GodEyeTabBarController {
         guard !showing && !animating else { return }
         animating = true
         modalPresentationStyle = .fullScreen
-        window?.rootViewController?.present(self, animated: true, completion: { [weak self] in
+        GodEye.visibleViewController?.present(self, animated: true, completion: { [weak self] in
             self?.showing = true
             self?.animating = false
         })

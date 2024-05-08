@@ -82,7 +82,15 @@ open class Log4G: NSObject {
                       line: line,
                       function: function)
     }
-    
+
+    public static func network(with request: URLRequest?, response: URLResponse?, data: Data?) {
+        Store.shared.addNetworkByte(response?.expectedContentLength ?? 0)
+        let model = NetworkRecordModel(request: request, response: response as? HTTPURLResponse, data: data)
+        model.insert(complete:  { _ in
+            GodEyeTabBarController.shared.addRecord(model: model)
+        })
+    }
+
     //--------------------------------------------------------------------------
     // MARK: PRIVATE FUNCTION
     //--------------------------------------------------------------------------
@@ -96,8 +104,8 @@ open class Log4G: NSObject {
     ///   - file: file which call the api
     ///   - line: line number at file which call the api
     ///   - function: function name which call the api
-    private func record(type:Log4gType,
-                     thread:Thread,
+    private func record(type: Log4gType,
+                     thread: Thread,
                      message: String,
                      file: String,
                      line: Int,
@@ -120,7 +128,7 @@ open class Log4G: NSObject {
     ///
     /// - Parameter file: path of file
     /// - Returns: filename
-    private func name(of file:String) -> String {
+    private func name(of file: String) -> String {
         URL(fileURLWithPath: file).lastPathComponent
     }
     
@@ -146,12 +154,12 @@ extension Log4G {
         }
     }
     
-    open class func add(delegate:Log4GDelegate) {
+    open class func add(delegate: Log4GDelegate) {
         let log4g = shared
         log4g.delegates.add(delegate)
     }
     
-    open class func remove(delegate:Log4GDelegate) {
+    open class func remove(delegate: Log4GDelegate) {
         let log4g = shared
         log4g.delegates.remove(delegate)
     }

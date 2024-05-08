@@ -37,7 +37,7 @@ extension URLSession {
     private class func hook() -> SwizzleResult {
         // let orig = #selector(URLSession.init(configuration:delegate:delegateQueue:))
         // the result is sessionWithConfiguration:delegate:delegateQueue: which runtime can't find it
-        
+
         let orig = Selector(("initWithConfiguration:delegate:delegateQueue:"))
         let alter = #selector(URLSession.init(configurationMonitor:delegate:delegateQueue:))
         let result = URLSession.swizzleInstanceMethod(origSelector: orig, toAlterSelector: alter)

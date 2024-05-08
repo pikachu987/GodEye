@@ -21,7 +21,7 @@ extension ConsoleViewController {
         if defaultSwitch.leak { EyesManager.shared.openLeakEye() }
     }
     
-    func addRecord(model:RecordORMProtocol) {
+    func addRecord(model: RecordORMProtocol) {
         if let pc = printViewController {
             pc.addRecord(model: model)
         } else {
@@ -56,6 +56,7 @@ extension ConsoleViewController: NetworkEyeDelegate {
         })
     }
 }
+
 //MARK: - CrashEye
 extension ConsoleViewController: CrashEyeDelegate {
     /// god's crash eye callback

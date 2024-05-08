@@ -9,7 +9,7 @@
 import Foundation
 
 open class GodEye: NSObject {
-    static var window: UIWindow?
+    private static var window: UIWindow?
 
     static var configuration: Configuration?
 
@@ -24,7 +24,7 @@ open class GodEye: NSObject {
         self.window = window
         self.window?.hook()
         self.configuration = configuration
-        viewController.show()
+        show()
     }
 
     open class func show() {
@@ -40,4 +40,19 @@ extension GodEye {
     private static let viewController: GodEyeViewController = {
         GodEyeViewController()
     }()
+
+    static var visibleViewController: UIViewController? {
+        (window ?? UIApplication.shared.mainWindow())?.rootViewController.map { getVisibleViewController($0) }
+    }
+
+    private static func getVisibleViewController(_ viewController: UIViewController) -> UIViewController {
+        if let tabBarController = viewController as? UITabBarController, let visibleViewController = tabBarController.selectedViewController {
+            return getVisibleViewController(visibleViewController)
+        } else if let navigationController = viewController as? UINavigationController, let visibleViewController = navigationController.visibleViewController  {
+            return getVisibleViewController(visibleViewController)
+        } else if let visibleViewController = viewController.presentedViewController {
+            return getVisibleViewController(visibleViewController)
+        }
+        return viewController
+    }
 }

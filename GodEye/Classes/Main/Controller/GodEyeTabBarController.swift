@@ -45,4 +45,8 @@ final class GodEyeTabBarController: UITabBarController {
 
         viewControllers = [consoleVC, monitorVC, fileVC, storageVC, settingVC]
     }
+
+    func addRecord(model: RecordORMProtocol) {
+        (consoleVC.viewControllers.first as? ConsoleViewController)?.addRecord(model: model)
+    }
 }
