@@ -22,8 +22,8 @@ extension UIView {
     }
 }
 
-open class UIThreadEye: NSObject {
-    open class func open() {
+class UIThreadEye: NSObject {
+    static func open() {
         if isSwizzled == false {
             isSwizzled = true
             hook()
@@ -32,7 +32,7 @@ open class UIThreadEye: NSObject {
         }
     }
     
-    open class func close() {
+    static  func close() {
         if isSwizzled == true {
             isSwizzled = false
             hook()
@@ -41,7 +41,7 @@ open class UIThreadEye: NSObject {
         }
     }
     
-    public static var isWatching: Bool  {
+    static var isWatching: Bool  {
         get {
             isSwizzled
         }

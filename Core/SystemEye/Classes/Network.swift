@@ -20,14 +20,14 @@ open class Network: NSObject {
     //--------------------------------------------------------------------------
     
     /// mobile carrier name
-    public static var carrierName: String? {
+    static var carrierName: String? {
         get {
             carrier?.carrierName
         }
     }
     
     /// mobile carrier country
-    public static var carrierCountry: String? {
+    static var carrierCountry: String? {
         get {
             let currentCountry = Locale.current as NSLocale
             return currentCountry.object(forKey: NSLocale.Key.countryCode) as? String
@@ -35,26 +35,26 @@ open class Network: NSObject {
     }
     
     /// mobile carrier country code
-    public static var carrierMobileCountryCode: String? {
+    static var carrierMobileCountryCode: String? {
         get {
             carrier?.mobileCountryCode
         }
     }
     
     /// get the carrier iso country code
-    public static var carrierISOCountryCode: String? {
+    static var carrierISOCountryCode: String? {
         get {
             carrier?.isoCountryCode
         }
     }
     /// get the carrier mobile network code
-    public static var carrierMobileNetworkCode: String? {
+    static var carrierMobileNetworkCode: String? {
         get {
             carrier?.mobileNetworkCode
         }
     }
     
-    public static var carrierAllowVOIP: Bool {
+    static var carrierAllowVOIP: Bool {
         get {
             carrier?.allowsVOIP ?? false
         }
@@ -64,20 +64,20 @@ open class Network: NSObject {
     // MARK: WIFI
     //--------------------------------------------------------------------------
     
-    public static var isConnectedToWifi: Bool {
+    static var isConnectedToWifi: Bool {
         get {
             guard let address = wifiIPAddress, address.count <= 0 else { return false }
             return true
         }
     }
     
-    public static var wifiIPAddress: String? {
+    static var wifiIPAddress: String? {
         get {
            NetObjc.wifiIPAddress()
         }
     }
     
-    public static var wifiNetmaskAddress: String? {
+    static var wifiNetmaskAddress: String? {
         get {
             NetObjc.wifiNetmaskAddress()
         }
@@ -87,20 +87,20 @@ open class Network: NSObject {
     // MARK: CELL
     //--------------------------------------------------------------------------
     
-    public static var isConnectedToCell: Bool {
+    static var isConnectedToCell: Bool {
         get {
             guard let address = cellIPAddress, address.count <= 0 else { return false }
             return true
         }
     }
     
-    public static var cellIPAddress: String? {
+    static var cellIPAddress: String? {
         get {
             NetObjc.cellIPAddress()
         }
     }
     
-    public static var cellNetmaskAddress: String? {
+    static var cellNetmaskAddress: String? {
         get {
             NetObjc.cellNetmaskAddress()
         }
@@ -108,7 +108,7 @@ open class Network: NSObject {
     //--------------------------------------------------------------------------
     // MARK: NETWORK FLOW
     //--------------------------------------------------------------------------
-    public static func flow() -> (wifiSend: UInt64,
+    static func flow() -> (wifiSend: UInt64,
                             wifiReceived: UInt64,
                                 wwanSend: UInt64,
                             wwanReceived: UInt64) {
@@ -119,7 +119,7 @@ open class Network: NSObject {
     //--------------------------------------------------------------------------
     // MARK: PRIVATE PROPERTY
     //--------------------------------------------------------------------------
-    private static var carrier: CTCarrier? {
+    static var carrier: CTCarrier? {
         get {
             CTTelephonyNetworkInfo().subscriberCellularProvider
         }

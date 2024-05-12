@@ -8,7 +8,7 @@
 
 import Foundation
 
-public extension NSObject {
+extension NSObject {
     
     func perform(closure: @escaping () -> (), afterDelay: TimeInterval) -> Void {
 

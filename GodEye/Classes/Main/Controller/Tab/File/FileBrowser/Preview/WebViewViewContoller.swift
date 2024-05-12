@@ -67,6 +67,12 @@ final class WebViewViewContoller: UIViewController {
 
         navigationController?.interactivePopGestureRecognizer?.isEnabled = isPrevPopGestureEnabled
     }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+
+        webView.evaluateJavaScript("updateWidth();")
+    }
 }
 
 extension WebViewViewContoller {
@@ -107,36 +113,77 @@ extension WebViewViewContoller {
 }
 
 extension WebViewViewContoller {
+    private var viewportContent: String {
+        "\"width=device-width, initial-scale=1.0, minimum-scale=0.1, maximum-scale=10.0, user-scalable=yes\""
+    }
+
     private var metas: String {
-        let viewport = "<meta name='viewport' content='width=device-width, initial-scale=1'>"
-        let metas = "\(viewport) "
-        return metas
+        let viewport = "<meta name=\"viewport\" content=\(viewportContent)>"
+        return "\n\(viewport)\n"
+    }
+
+    private var cssStyleContent: String {
+        let cssBody = "body {margin: 0px; padding: 0px; background-color: #000000; color: #ffffff;}\n"
+        let cssP = "p {margin: 0px; padding: 0px;}\n"
+        let cssSpan = "span {margin: 0px; padding: 0px;}\n"
+        let cssHighlight = ".highlight { background-color: #\(UIColor.highlightBG.hexString()); color: #\(UIColor.highlightFG.hexString());}\n"
+        let cssPre = "pre {display: inline; overflow: auto; white-space: pre-line; white-space: -moz-pre-line; white-space: -o-pre-line; white-space: -ms-pre-line;}\n"
+        return "\(cssBody)\(cssP)\(cssSpan)\(cssHighlight)\(cssPre)"
     }
 
     private var cssStyle: String {
-        let cssBody = "body {margin: 0px; padding: 0px; background-color: black; color: white;}"
-        let cssP = "p {margin: 0px; padding: 0px;}"
-        let cssSpan = "span {margin: 0px; padding: 0px;}"
-        let cssHighlight = ".highlight { background-color: \(UIColor.highlightBG.hexString()); color: \(UIColor.highlightFG.hexString())}"
-        let style = "<style>\(cssBody) \(cssP) \(cssSpan) \(cssHighlight)</style> "
-        return style
+        "<style type=\"text/css\">\(cssStyleContent)</style>\n"
     }
 
     private var script: String {
-        let removeHighlight = "document.body.innerHTML = document.body.innerHTML.replace(new RegExp('</?span[^>]*>', 'g'), '');"
-        let insertHighlight = "document.body.innerHTML = document.body.innerHTML.replace(new RegExp(text, 'gi'), '<span class=\"highlight\">$&</span>');"
-        let initialHighlight = (searchBar.text ?? "") == "" ? "" : "highlight('\(searchBar.text ?? "")');"
-        let highlightScript = "function highlight(text) { \(removeHighlight) if(text != '') { \(insertHighlight) } }"
-        let script = "<script>\(highlightScript) \(initialHighlight)</script>"
+        let removeHighlight = "\ndocument.body.innerHTML = document.body.innerHTML.replace(new RegExp(\"</?span class=\\\"highlight\\\"[^>]*>\", \"g\"), \"\");\n"
+        let insertHighlight = "\ndocument.body.innerHTML = document.body.innerHTML.replace(new RegExp(text, \"gi\"), \"<span class=\\\"highlight\\\">$&</span>\");\n"
+        let highlightScript = "\nfunction highlight(text) {\(removeHighlight)if(text != '') {\(insertHighlight)}\n}\n"
+        let initialHighlight = (searchBar.text ?? "") == "" ? "" : "\nhighlight(\"\(searchBar.text ?? "")\");\n"
+        let viewPortScript = "\nfunction updateWidth() {\nviewport = document.querySelector(\"meta[name=viewport]\");\nviewport.setAttribute(\"content\", \(viewportContent));\n}\nupdateWidth();\n"
+        let script = "\n<script>\(highlightScript)\(viewPortScript)\(initialHighlight)\n</script>\n"
         return script
     }
 
     private func processForDisplay() {
         let content = htmlText.convertSpecialCharacters
-        let head = "<head>\(metas)\(cssStyle)</head>"
-        let body = "<body>\(content)\(script)</body>"
-        let html = "<html>\(head)\(body)</html>"
-        webView.loadHTMLString(html, baseURL: nil)
+        if htmlText.hasPrefix("<!DOCTYPE") || htmlText.hasPrefix("<html") {
+            var html = htmlText
+
+            if let index = html.index(of: "<style") {
+                html.insert(contentsOf: metas, at: index)
+            } else if let index = html.index(of: "</head") {
+                html.insert(contentsOf: metas, at: index)
+            }
+            if let index = html.index(of: "</style") {
+                html.insert(contentsOf: cssStyleContent, at: index)
+            } else if let index = html.index(of: "</head") {
+                html.insert(contentsOf: cssStyle, at: index)
+            }
+            if let index = html.index(of: "<body") {
+                html.insert(contentsOf: "\n<pre>\n", at: html.index(index, offsetBy: 6))
+            }
+            if let index = html.index(of: "</body") {
+                html.insert(contentsOf: "\n</pre>\n", at: index)
+            }
+            if let index = html.index(of: "</body") {
+                html.insert(contentsOf: script, at: index)
+            }
+
+            let preComponents = html.components(separatedBy: "<pre>")
+            let preBefore = preComponents.first ?? ""
+            let preCloseComponents = (preComponents.last ?? "").components(separatedBy: "</pre>")
+            let preContent = (preCloseComponents.first ?? "").replacingOccurrences(of: "\r\n", with: "").replacingOccurrences(of: "\n", with: "")
+            let preAfter = preCloseComponents.last ?? ""
+
+            let result = "\(preBefore)<pre>\(preContent)</pre>\(preAfter)"
+            webView.loadHTMLString(html, baseURL: nil)
+        } else {
+            let head = "<head>\(metas)\(cssStyle)</head>"
+            let body = "<body>\(content)\(script)</body>"
+            let html = "<html>\(head)\(body)</html>"
+            webView.loadHTMLString(html, baseURL: nil)
+        }
     }
 }
 
@@ -164,5 +211,29 @@ extension String {
             newString = newString.replacingOccurrences(of: escaped_char, with: unescaped_char, options: .regularExpression, range: nil)
         }
         return newString.replacingOccurrences(of: "\\/", with: "/")
+    }
+
+    func index<S: StringProtocol>(of string: S, options: String.CompareOptions = []) -> Index? {
+        range(of: string, options: options)?.lowerBound
+    }
+
+    func endIndex<S: StringProtocol>(of string: S, options: String.CompareOptions = []) -> Index? {
+        range(of: string, options: options)?.upperBound
+    }
+
+    func indices<S: StringProtocol>(of string: S, options: String.CompareOptions = []) -> [Index] {
+        ranges(of: string, options: options).map(\.lowerBound)
+    }
+
+    func ranges<S: StringProtocol>(of string: S, options: String.CompareOptions = []) -> [Range<Index>] {
+        var result: [Range<Index>] = []
+        var startIndex = startIndex
+        while startIndex < endIndex, let range = self[startIndex...].range(of: string, options: options) {
+            result.append(range)
+            startIndex = range.lowerBound < range.upperBound
+            ? range.upperBound
+            : index(range.lowerBound, offsetBy: 1, limitedBy: endIndex) ?? endIndex
+        }
+        return result
     }
 }

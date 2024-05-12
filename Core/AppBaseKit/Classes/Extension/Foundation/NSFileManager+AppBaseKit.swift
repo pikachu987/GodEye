@@ -10,7 +10,7 @@ import Foundation
 
 extension FileManager {
     
-    public class func createDirectoryIfNotExists(path: String) -> Bool {
+    class func createDirectoryIfNotExists(path: String) -> Bool {
 
         let fileManager = self.default
         var isDir: ObjCBool = false
@@ -25,7 +25,7 @@ extension FileManager {
         return true
     }
     
-    public class func removeItemIfExists(path: String) -> Bool {
+    class func removeItemIfExists(path: String) -> Bool {
         let fileManager = self.default
         var isDir: ObjCBool = false
         let exists = fileManager.fileExists(atPath: path, isDirectory: &isDir)

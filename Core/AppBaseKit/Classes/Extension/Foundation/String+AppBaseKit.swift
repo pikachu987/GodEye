@@ -9,5 +9,5 @@
 import Foundation
 // MARK: - 方便转NSString
 extension String {
-    public var NS: NSString { return (self as NSString) }
+    var NS: NSString { return (self as NSString) }
 }

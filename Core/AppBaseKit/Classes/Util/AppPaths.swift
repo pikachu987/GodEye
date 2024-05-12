@@ -22,7 +22,7 @@ import Foundation
  *
  * @returns The bundle path concatenated with the given relative path.
  */
-public func AppPathForBundleResource(bundle: Bundle?, relativePath: String) -> String {
+func AppPathForBundleResource(bundle: Bundle?, relativePath: String) -> String {
     guard let resourcePath = (bundle == nil ? Bundle.main : bundle)?.resourcePath else { return "" }
 
     return (resourcePath as NSString).appendingPathComponent(relativePath)
@@ -33,7 +33,7 @@ public func AppPathForBundleResource(bundle: Bundle?, relativePath: String) -> S
  *
  * @returns The documents path concatenated with the given relative path.
  */
-public func AppPathForDocumentsResource(relativePath: String) -> String {
+func AppPathForDocumentsResource(relativePath: String) -> String {
     documentsPath.appendingPathComponent(relativePath)
 }
 
@@ -42,7 +42,7 @@ public func AppPathForDocumentsResource(relativePath: String) -> String {
  *
  * @returns The Library path concatenated with the given relative path.
  */
-public func AppPathForLibraryResource(relativePath: String) -> String {
+func AppPathForLibraryResource(relativePath: String) -> String {
     libraryPath.appendingPathComponent(relativePath)
 }
 
@@ -51,7 +51,7 @@ public func AppPathForLibraryResource(relativePath: String) -> String {
  *
  * @returns The caches path concatenated with the given relative path.
  */
-public func AppPathForCachesResource(relativePath: String) -> String {
+func AppPathForCachesResource(relativePath: String) -> String {
     cachesPath.appendingPathComponent(relativePath)
 }
 
@@ -61,7 +61,7 @@ public func AppPathForCachesResource(relativePath: String) -> String {
  *
  * @returns The caches path concatenated with the given relative path.
  */
-public func AppPathForApplicationSupportResource(relativePath: String) -> String {
+func AppPathForApplicationSupportResource(relativePath: String) -> String {
     applicationSupportPath.appendingPathComponent(relativePath)
 }
 

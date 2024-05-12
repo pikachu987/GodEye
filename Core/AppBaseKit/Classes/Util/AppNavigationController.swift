@@ -8,11 +8,11 @@
 
 import UIKit
 
-public class AppNavigationController: UINavigationController {
+class AppNavigationController: UINavigationController {
     
-    public var enable = true
+    var enable = true
     
-    override public func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
         
         // 获取系统自带滑动手势的target对象
@@ -31,7 +31,7 @@ public class AppNavigationController: UINavigationController {
         interactivePopGestureRecognizer!.isEnabled = false
     }
     
-    override public func pushViewController(_ viewController: UIViewController, animated: Bool) {
+    override func pushViewController(_ viewController: UIViewController, animated: Bool) {
         
         if viewControllers.count > 0 {
             viewController.hidesBottomBarWhenPushed = true
@@ -43,7 +43,7 @@ public class AppNavigationController: UINavigationController {
 // MARK: UIGestureRecognizerDelegate
 extension AppNavigationController: UIGestureRecognizerDelegate {
     
-    public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         guard let translation: CGPoint = (gestureRecognizer as? UIPanGestureRecognizer)?.translation(in: view.superview) else { return false }
 
         guard enable else { return false }

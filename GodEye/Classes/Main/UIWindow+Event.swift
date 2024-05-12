@@ -9,7 +9,7 @@
 import UIKit
 
 extension UIWindow {
-    fileprivate class var hookWindow: UIWindow? {
+    fileprivate static var hookWindow: UIWindow? {
         get {
             objc_getAssociatedObject(self, &Define.Key.Associated.HookWindow) as? UIWindow
         }

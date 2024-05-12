@@ -12,7 +12,7 @@ import UIKit
 // MARK: - Resize
 extension UIImage {
     
-    public func resizeImage(newSize: CGSize) -> UIImage? {
+    func resizeImage(newSize: CGSize) -> UIImage? {
         let widthRatio  = newSize.width  / size.width
         let heightRatio = newSize.height / size.height
         
@@ -36,11 +36,11 @@ extension UIImage {
         return newImage
     }
     
-    public var realSize: CGSize {
+    var realSize: CGSize {
         CGSize(width: size.width * scale, height: size.height * scale)
     }
     
-    public var isSquaresSize: Bool {
+    var isSquaresSize: Bool {
         let size = realSize
         return size.width == size.height
     }
@@ -48,14 +48,14 @@ extension UIImage {
 
 
 // MARK: - draw image
-public extension UIImage {
+extension UIImage {
     
     /// 用CGContext绘制一张图形到原来的图片中
     ///
     /// - parameter block: 绘制block
     ///
     /// - returns: 生成的新图
-    public func drawGraphics(with block: (CGContext,CGRect) -> Void) -> UIImage? {
+    func drawGraphics(with block: (CGContext,CGRect) -> Void) -> UIImage? {
 
         let size = size
         let rect = CGRect(x:0, y:0, width: size.width, height: size.height)
@@ -78,7 +78,7 @@ public extension UIImage {
      
      - returns: 生成的图片
      */
-    public class func image(size: CGSize, drawingBlock: (CGContext,CGRect) -> Void) -> UIImage? {
+    class func image(size: CGSize, drawingBlock: (CGContext,CGRect) -> Void) -> UIImage? {
 
         guard size.equalTo(CGSize()) == false else { return nil }
 
@@ -103,7 +103,7 @@ public extension UIImage {
      
      - returns: 生成的图片对象
      */
-    public class func image(color: UIColor, size: CGSize) ->UIImage? {
+    class func image(color: UIColor, size: CGSize) ->UIImage? {
 
         guard size.equalTo(CGSize()) == false else { return nil }
 

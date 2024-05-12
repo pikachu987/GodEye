@@ -13,7 +13,7 @@ import UIKit
 // MARK: - MainWindow
 extension UIApplication {
     
-    public func mainWindow() -> UIWindow? {
+    func mainWindow() -> UIWindow? {
         guard let delegate = delegate else {
             return keyWindow
         }

@@ -51,7 +51,7 @@ final class ConsolePrintViewController: UIViewController {
         $0.delegate = dataSource
         $0.dataSource = dataSource
         return $0
-    }(RecordTableView())
+    }(RecordTableView(frame: view.bounds, style: .plain))
 
     private lazy var inputField: UITextField = {
         $0.borderStyle = .roundedRect
@@ -76,6 +76,8 @@ final class ConsolePrintViewController: UIViewController {
     private let dataSource: RecordTableViewDataSource
     private let type: RecordType
 
+    private(set) var isViewAppearOnce: Bool = false
+
     init(type: RecordType) {
         self.type = type
         self.dataSource = RecordTableViewDataSource(type: type, filterType: type.filterTypes.first ?? .init(title: "", value: nil))
@@ -95,6 +97,7 @@ final class ConsolePrintViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
+        isViewAppearOnce = true
         navigationItem.title = type.title
         navigationItem.rightBarButtonItems = [UIBarButtonItem(barButtonSystemItem: .trash,
                                                               target: self,
@@ -257,7 +260,9 @@ extension ConsolePrintViewController: UISearchBarDelegate {
 
 extension ConsolePrintViewController: RecordTableViewDelegate {
     func recordTableViewReload(_ sender: RecordTableViewDataSource) {
-        recordTableView.reloadData()
+        if isViewAppearOnce {
+            recordTableView.reloadData()
+        }
     }
 
     func recordTableViewDidUserInteracter(_ sender: RecordTableViewDataSource) {

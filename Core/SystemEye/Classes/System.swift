@@ -10,7 +10,7 @@ import Foundation
 private let HOST_BASIC_INFO_COUNT         : mach_msg_type_number_t =
     UInt32(MemoryLayout<host_basic_info_data_t>.size / MemoryLayout<integer_t>.size)
 
-open class System: NSObject {
+public class System: NSObject {
     
     //--------------------------------------------------------------------------
     // MARK: - OPEN PROPERTY

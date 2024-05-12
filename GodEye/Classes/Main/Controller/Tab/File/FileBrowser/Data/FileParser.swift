@@ -8,7 +8,7 @@
 
 import Foundation
 
-public class FileParser {
+class FileParser {
     static let sharedInstance = FileParser()
     
     var _excludesFileExtensions = [String]()

@@ -10,21 +10,21 @@ import Foundation
 import Foundation
 import asl
 
-@objc public protocol ASLEyeDelegate: class {
+@objc protocol ASLEyeDelegate: class {
     @objc optional func aslEye(_ aslEye:ASLEye,catchLogs logs:[String])
 }
 
-open class ASLEye: NSObject {
+class ASLEye: NSObject {
     
-    open weak var delegate: ASLEyeDelegate?
+    weak var delegate: ASLEyeDelegate?
     
-    open var isOpening: Bool {
+    var isOpening: Bool {
         get {
             timer?.isValid ?? false
         }
     }
     
-    open func open(with interval: TimeInterval) {
+    func open(with interval: TimeInterval) {
         timer = Timer.scheduledTimer(timeInterval: interval,
                                           target: self,
                                           selector: #selector(pollingLogs),
@@ -32,7 +32,7 @@ open class ASLEye: NSObject {
                                           repeats: true)
     }
     
-    open func close() {
+    func close() {
         timer?.invalidate()
         timer = nil
         

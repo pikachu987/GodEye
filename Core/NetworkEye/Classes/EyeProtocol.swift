@@ -18,7 +18,7 @@ class EyeProtocol: URLProtocol {
         URLProtocol.unregisterClass(classForCoder())
     }
     
-    public class func add(delegate:NetworkEyeDelegate) {
+    static func add(delegate:NetworkEyeDelegate) {
         // delete null week delegate
         delegates = delegates.filter { $0.delegate != nil }
 
@@ -31,7 +31,7 @@ class EyeProtocol: URLProtocol {
         }
     }
     
-    public class func remove(delegate:NetworkEyeDelegate) {
+    static func remove(delegate:NetworkEyeDelegate) {
         delegates = delegates
             .filter {
                 // filter null weak delegate

@@ -8,14 +8,14 @@
 
 import Foundation
 
-open class Hardware: NSObject {
+public class Hardware: NSObject {
     
     //--------------------------------------------------------------------------
     // MARK: OPEN PROPERTY
     //--------------------------------------------------------------------------
     
     /// System uptime, you can get the components from the result
-    public static var uptime: Date {
+    static var uptime: Date {
         get {
             /// get the info about the process
             let processsInfo = ProcessInfo.processInfo
@@ -26,15 +26,15 @@ open class Hardware: NSObject {
         }
     }
     /// model of the device, eg: "iPhone", "iPod touch"
-    public static let deviceModel: String = UIDevice.current.model
+    static let deviceModel: String = UIDevice.current.model
     /// name of the device, eg: "My iPhone"
-    public static var deviceName: String = UIDevice.current.name
+    static var deviceName: String = UIDevice.current.name
     /// system name of the device, eg: "iOS"
-    public static let systemName: String = UIDevice.current.systemName
+    static let systemName: String = UIDevice.current.systemName
     /// system version of the device, eg: "10.0"
-    public static let systemVersion: String = UIDevice.current.systemVersion
+    static let systemVersion: String = UIDevice.current.systemVersion
     /// version code of device, eg: "iPhone7,1"
-    public static var deviceVersionCode: String {
+    static var deviceVersionCode: String {
         get {
             var systemInfo = utsname()
             uname(&systemInfo)
@@ -44,7 +44,7 @@ open class Hardware: NSObject {
         }
     }
     /// version of device, eg: "iPhone5"
-    public static var deviceVersion: String {
+    static var deviceVersion: String {
         get {
             switch deviceVersionCode {
             case "iPod5,1":                                       return "iPod touch (5th generation)"
@@ -131,31 +131,31 @@ open class Hardware: NSObject {
         }
     }
     /// get the screen width (x)
-    public static var screenWidth: CGFloat {
+    static var screenWidth: CGFloat {
         get {
             UIScreen.main.bounds.size.width
         }
     }
     /// get the screen height (y)
-    public static var screenHeight: CGFloat {
+    static var screenHeight: CGFloat {
         get {
             UIScreen.main.bounds.size.height
         }
     }
     /// get the brightness of screen
-    public static var screenBrightness: CGFloat {
+    static var screenBrightness: CGFloat {
         get {
             UIScreen.main.brightness
         }
     }
     
-    public static var isMultitaskingSupported: Bool {
+    static var isMultitaskingSupported: Bool {
         get {
             UIDevice.current.isMultitaskingSupported
         }
     }
     /// is the debugger attached
-    public static var isDebuggerAttached: Bool {
+    static var isDebuggerAttached: Bool {
         get {
             var info = kinfo_proc()
             var mib : [Int32] = [CTL_KERN, KERN_PROC, KERN_PROC_PID, getpid()]
@@ -167,7 +167,7 @@ open class Hardware: NSObject {
     }
     
     /// is the device plugged in
-    public static var isPluggedIn: Bool {
+    static var isPluggedIn: Bool {
         get {
             let preEnable = UIDevice.current.isBatteryMonitoringEnabled
             UIDevice.current.isBatteryMonitoringEnabled = true
@@ -178,7 +178,7 @@ open class Hardware: NSObject {
     }
     
     /// is the device jailbrokened
-    public static var isJailbroken: Bool {
+    static var isJailbroken: Bool {
         let cydiaURL = "/Applications/Cydia.app"
         return FileManager.default.fileExists(atPath: cydiaURL)
     }

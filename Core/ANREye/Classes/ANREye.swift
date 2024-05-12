@@ -11,7 +11,7 @@ import Foundation
 //--------------------------------------------------------------------------
 // MARK: - ANREyeDelegate
 //--------------------------------------------------------------------------
-@objc public protocol ANREyeDelegate: AnyObject {
+@objc protocol ANREyeDelegate: AnyObject {
     @objc optional func anrEye(anrEye: ANREye,
                                catchWithThreshold threshold: Double,
                                mainThreadBacktrace: String?,
@@ -21,14 +21,14 @@ import Foundation
 //--------------------------------------------------------------------------
 // MARK: - ANREye
 //--------------------------------------------------------------------------
-open class ANREye: NSObject {
-    
+class ANREye: NSObject {
+
     //--------------------------------------------------------------------------
     // MARK: OPEN PROPERTY
     //--------------------------------------------------------------------------
-    open weak var delegate: ANREyeDelegate?
+    weak var delegate: ANREyeDelegate?
     
-    open var isOpening: Bool {
+    var isOpening: Bool {
         get {
             guard let pingThread = pingThread else { return false }
             return !pingThread.isCancelled
@@ -38,7 +38,7 @@ open class ANREye: NSObject {
     // MARK: OPEN FUNCTION
     //--------------------------------------------------------------------------
     
-    open func open(with threshold:Double) {
+    func open(with threshold:Double) {
         if Thread.current.isMainThread {
             AppBacktrace.main_thread_id = mach_thread_self()
         } else {
@@ -61,7 +61,7 @@ open class ANREye: NSObject {
         })
     }
     
-    open func close() {
+    func close() {
         pingThread?.cancel()
     }
     

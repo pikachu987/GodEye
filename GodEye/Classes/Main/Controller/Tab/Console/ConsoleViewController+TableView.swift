@@ -24,7 +24,9 @@ extension ConsoleViewController {
         guard let indexPath = indexPath(of: type) else { return }
         guard dataSource.indices ~= indexPath.section else { return }
         guard dataSource[indexPath.section].indices ~= indexPath.row else { return }
-        tableView.reloadRows(at: [indexPath], with: .none)
+        if isViewAppearOnce {
+            tableView.reloadRows(at: [indexPath], with: .none)
+        }
     }
     
     private func indexPath(of type: RecordType) -> IndexPath? {

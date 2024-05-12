@@ -9,7 +9,7 @@
 import Foundation
 
 open class GodEye: NSObject {
-    private static var window: UIWindow?
+    static var window: UIWindow?
 
     static var configuration: Configuration?
 
@@ -25,6 +25,7 @@ open class GodEye: NSObject {
         self.window?.hook()
         self.configuration = configuration
         show()
+        _ = GodEyeTabBarController.shared.showing
     }
 
     open class func show() {
@@ -41,8 +42,27 @@ extension GodEye {
         GodEyeViewController()
     }()
 
-    static var visibleViewController: UIViewController? {
-        (window ?? UIApplication.shared.mainWindow())?.rootViewController.map { getVisibleViewController($0) }
+    static var visibleViewControllerForProject: UIViewController? {
+        let viewController = (window ?? UIApplication.shared.mainWindow())?.rootViewController.map { getVisibleViewController($0) }
+        if viewController?.tabBarController == GodEyeTabBarController.shared {
+            return viewController?.presentingViewController.map { getViewController($0) }
+        }
+        return viewController
+    }
+
+    static var visibleViewControllerForEvery: UIViewController? {
+        let viewController = (window ?? UIApplication.shared.mainWindow())?.rootViewController.map { getVisibleViewController($0) }
+        return viewController
+    }
+
+    private static func getViewController(_ viewController: UIViewController) -> UIViewController {
+        if let tabBarController = viewController as? UITabBarController, let visibleViewController = tabBarController.selectedViewController {
+            return getViewController(visibleViewController)
+        } else if let navigationController = viewController as? UINavigationController, let visibleViewController = navigationController.viewControllers.last  {
+            return getViewController(visibleViewController)
+        } else {
+            return viewController
+        }
     }
 
     private static func getVisibleViewController(_ viewController: UIViewController) -> UIViewController {

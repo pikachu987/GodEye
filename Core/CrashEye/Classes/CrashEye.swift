@@ -11,7 +11,7 @@ import Foundation
 //--------------------------------------------------------------------------
 // MARK: - CrashEyeDelegate
 //--------------------------------------------------------------------------
-public protocol CrashEyeDelegate: NSObjectProtocol {
+protocol CrashEyeDelegate: NSObjectProtocol {
     func crashEyeDidCatchCrash(with model: CrashModel)
 }
 
@@ -38,13 +38,13 @@ public enum CrashModelType:Int {
 //--------------------------------------------------------------------------
 // MARK: - CrashModel
 //--------------------------------------------------------------------------
-open class CrashModel: NSObject {
+class CrashModel: NSObject {
     
-    public let type: CrashModelType
-    public let name: String
-    public let reason: String
-    public let appinfo: String
-    public let callStack: String
+    let type: CrashModelType
+    let name: String
+    let reason: String
+    let appinfo: String
+    let callStack: String
 
     init(type: CrashModelType,
          name: String,
@@ -68,7 +68,7 @@ private var app_old_exceptionHandler: (@convention(c) (NSException) -> Swift.Voi
 //--------------------------------------------------------------------------
 // MARK: - CrashEye
 //--------------------------------------------------------------------------
-public class CrashEye: NSObject {
+class CrashEye: NSObject {
     
     //--------------------------------------------------------------------------
     // MARK: OPEN PROPERTY
@@ -78,7 +78,7 @@ public class CrashEye: NSObject {
     //--------------------------------------------------------------------------
     // MARK: OPEN FUNCTION
     //--------------------------------------------------------------------------
-    open class func add(delegate:CrashEyeDelegate) {
+    static func add(delegate:CrashEyeDelegate) {
         // delete null week delegate
         delegates = delegates.filter {
             $0.delegate != nil
@@ -99,7 +99,7 @@ public class CrashEye: NSObject {
         }
     }
     
-    open class func remove(delegate:CrashEyeDelegate) {
+    static func remove(delegate:CrashEyeDelegate) {
         delegates = delegates.filter {
             // filter null weak delegate
             $0.delegate != nil
@@ -116,7 +116,7 @@ public class CrashEye: NSObject {
     //--------------------------------------------------------------------------
     // MARK: PRIVATE FUNCTION
     //--------------------------------------------------------------------------
-    private class func open() {
+    private static func open() {
         guard !isOpen else { return }
         isOpen = true
 
@@ -125,13 +125,13 @@ public class CrashEye: NSObject {
         setCrashSignalHandler()
     }
     
-    private class func close() {
+    private static func close() {
         guard isOpen else { return }
         isOpen = false
         NSSetUncaughtExceptionHandler(app_old_exceptionHandler)
     }
     
-    private class func setCrashSignalHandler(){
+    private static func setCrashSignalHandler(){
         signal(SIGABRT, CrashEye.RecieveSignal)
         signal(SIGILL, CrashEye.RecieveSignal)
         signal(SIGSEGV, CrashEye.RecieveSignal)
@@ -189,7 +189,7 @@ public class CrashEye: NSObject {
         killApp()
     }
     
-    private class func appInfo() -> String {
+    private static func appInfo() -> String {
         let displayName = Bundle.main.object(forInfoDictionaryKey: "CFBundleName") ?? ""
         let shortVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") ?? ""
         let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") ?? ""
@@ -201,7 +201,7 @@ public class CrashEye: NSObject {
     }
     
     
-    private class func name(of signal: Int32) -> String {
+    private static func name(of signal: Int32) -> String {
         switch (signal) {
         case SIGABRT: return "SIGABRT"
         case SIGILL: return "SIGILL"
@@ -213,7 +213,7 @@ public class CrashEye: NSObject {
         }
     }
     
-    private class func killApp(){
+    private static func killApp(){
         NSSetUncaughtExceptionHandler(nil)
         
         signal(SIGABRT, SIG_DFL)

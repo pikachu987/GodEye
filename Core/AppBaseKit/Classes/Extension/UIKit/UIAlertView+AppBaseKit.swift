@@ -24,13 +24,13 @@ extension UIAlertView {
     
     
     
-    public class func quickTip(message: String,
+    static func quickTip(message: String,
                                title: String = "Tip",
                                cancelButtonTitle: String = "OK") {
         UIAlertView(title: title, message: message, delegate: nil, cancelButtonTitle: cancelButtonTitle).show()
     }
     
-    public class func quickConfirm(message: String,
+    static func quickConfirm(message: String,
                                    title: String,
                                    cancelButtonTitle: String = "No",
                                    confirmButtonTitle: String = "Yes",

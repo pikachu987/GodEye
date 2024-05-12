@@ -16,7 +16,7 @@ extension UIView {
      
      - returns: retun true if find and resign first responder, otherwise return false
      */
-    public func findAndResignFirstResponder() -> Bool {
+    func findAndResignFirstResponder() -> Bool {
         if isFirstResponder {
             resignFirstResponder()
             return true

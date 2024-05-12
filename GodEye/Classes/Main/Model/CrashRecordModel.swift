@@ -9,11 +9,11 @@
 import Foundation
 
 final class CrashRecordModel: NSObject {
-    public let type: CrashModelType
-    public let name: String
-    public let reason: String
-    public let appinfo: String
-    public let callStack: String
+    let type: CrashModelType
+    let name: String
+    let reason: String
+    let appinfo: String
+    let callStack: String
     
     init(model: CrashModel) {
         self.type = model.type

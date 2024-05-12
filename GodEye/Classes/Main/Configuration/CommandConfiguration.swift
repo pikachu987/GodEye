@@ -12,7 +12,52 @@ import Foundation
 // MARK: - CommandConfiguration
 //--------------------------------------------------------------------------
 open class CommandConfiguration: NSObject {
-    
+    public override init() {
+        super.init()
+        add(command: "screen", description: "UIScreen Info") { () -> (String) in
+            var result = ""
+            result += "UIScreen.main.bounds: \(UIScreen.main.bounds)"
+            result += "\nUIScreen.main.nativeBounds: \(UIScreen.main.nativeBounds)"
+            result += "\nUIScreen.main.scale: \(UIScreen.main.scale)"
+            result += "\nUIScreen.main.nativeScale: \(UIScreen.main.nativeScale)"
+            result += "\nUIScreen.main.availableModes: \(UIScreen.main.availableModes)"
+            result += "\nUIScreen.main.maximumFramesPerSecond: \(UIScreen.main.maximumFramesPerSecond)"
+            return result
+        }
+        add(command: "window", description: "UIWindow Info") { () -> (String) in
+            var result = ""
+            let window = GodEye.window
+            result += "statusBarHeight: \(window?.windowScene?.statusBarManager?.statusBarFrame.height ?? 0)"
+            result += "\nsafeAreaInsets: \(window?.safeAreaInsets ?? .init(top: 0, left: 0, bottom: 0, right: 0))"
+            result += "\nframe: \(window?.frame ?? .zero)"
+            return result
+        }
+        add(command: "vc", description: "VisibleViewController") { () -> (String) in
+            var result = ""
+            let visibleViewController = GodEye.visibleViewControllerForProject
+            result += "visibleViewController: \(visibleViewController)"
+            result += "\nview.frame: \(visibleViewController?.view.frame)"
+            result += "\nview.subviews: \(visibleViewController?.view.subviews)"
+            return result
+        }
+        add(command: "view", description: "VisibleViewController View") { () -> (String) in
+            var result = ""
+            guard let visibleViewController = GodEye.visibleViewControllerForProject else { return "VisibleViewController Is Empty" }
+            func recursion(view: UIView, depth: Int) -> String {
+                var text = "\(Array(0...depth).map { _ in "-" }.joined()) \(view)"
+                let subviewText = view.subviews.map {
+                    return recursion(view: $0, depth: depth + 1)
+                }.joined(separator: "\n")
+                if !subviewText.isEmpty {
+                    text += "\n\(subviewText)"
+                }
+                return text
+            }
+            result += recursion(view: visibleViewController.view, depth: 0)
+            return result
+        }
+    }
+
     //--------------------------------------------------------------------------
     // MARK: OPEN FUNCTION
     //--------------------------------------------------------------------------

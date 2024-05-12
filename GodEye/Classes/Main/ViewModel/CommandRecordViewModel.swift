@@ -22,14 +22,12 @@ class CommandRecordViewModel: BaseRecordViewModel<CommandRecordModel> {
     
     private func headerString(type: RecordORMAttributedType, filterType: RecordORMFilterType?, filterText: String?) -> NSAttributedString {
         let highlightText = CommandRecordModel.FilterType.command.highlightText(filterType: filterType, filterText: filterText)
-        let attributedString = headerString(with: type, prefix: "Command", content: model.command, color: UIColor(hex: 0xB754C4), highlightText: highlightText) as? NSMutableAttributedString ?? .init()
-        attributedString.removeAttribute(.link, range: .init(location: 0, length: attributedString.length))
-        return attributedString
+        return headerString(with: type, prefix: "Command", content: model.command, color: UIColor(hex: 0xB754C4), highlightText: highlightText)
     }
     
     private func actionString(type: RecordORMAttributedType, filterType: RecordORMFilterType?, filterText: String?) -> NSAttributedString {
         let highlightText = CommandRecordModel.FilterType.result.highlightText(filterType: filterType, filterText: filterText)
-        let attributedString = NSMutableAttributedString(string: model.actionResult, attributes: attributes(with: type))
+        let attributedString = NSMutableAttributedString(string: model.actionResult, attributes: attributes(with: type, link: .tap))
         attributedString.highlight(highlightText: highlightText)
         return attributedString
     }

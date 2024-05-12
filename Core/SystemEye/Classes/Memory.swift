@@ -20,7 +20,7 @@ open class Memory: NSObject {
     //--------------------------------------------------------------------------
     
     /// Memory usage of application
-    open class func applicationUsage() -> (used: Double,
+    public static func applicationUsage() -> (used: Double,
                                           total: Double) {
         var info = mach_task_basic_info()
         var count = mach_msg_type_number_t(MemoryLayout.size(ofValue: info) / MemoryLayout<integer_t>.size)
@@ -35,7 +35,7 @@ open class Memory: NSObject {
     }
     
     /// Memory usage of system
-    open class func systemUsage() -> (free: Double,
+    public static func systemUsage() -> (free: Double,
                                     active: Double,
                                   inactive: Double,
                                      wired: Double,

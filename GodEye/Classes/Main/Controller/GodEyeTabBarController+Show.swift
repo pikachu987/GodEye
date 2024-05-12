@@ -34,20 +34,31 @@ extension GodEyeTabBarController {
     static func hide() {
         shared.hideConsole()
     }
+    
     private func hideConsole() {
         guard showing && !animating else { return }
         animating = true
-        dismiss(animated: true, completion: { [weak self] in
+        dismissAll { [weak self] in
             self?.showing = false
             self?.animating = false
-        })
+        }
     }
-    
+
+    private func dismissAll(completion: @escaping (() -> Void)) {
+        if GodEye.visibleViewControllerForEvery?.tabBarController == self {
+            dismiss(animated: true, completion: completion)
+        } else {
+            GodEye.visibleViewControllerForEvery?.dismiss(animated: false, completion: { [weak self] in
+                self?.dismissAll(completion: completion)
+            })
+        }
+    }
+
     private func showConsole() {
         guard !showing && !animating else { return }
         animating = true
         modalPresentationStyle = .fullScreen
-        GodEye.visibleViewController?.present(self, animated: true, completion: { [weak self] in
+        GodEye.visibleViewControllerForProject?.present(self, animated: true, completion: { [weak self] in
             self?.showing = true
             self?.animating = false
         })

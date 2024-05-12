@@ -45,7 +45,7 @@ extension FBFilePreviewController {
          * @abstract The URL of the item to preview.
          * @discussion The URL must be a file URL.
          */
-        public var previewItemURL: URL?
+        var previewItemURL: URL?
 
         init(filePath: URL) {
             previewItemURL = filePath

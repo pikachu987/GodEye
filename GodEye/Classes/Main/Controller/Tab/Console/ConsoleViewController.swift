@@ -15,7 +15,9 @@ final class ConsoleViewController: UIViewController {
         $0.dataSource = self
         $0.backgroundColor = .clear
         return $0
-    }(UITableView(frame: .zero, style: .grouped))
+    }(UITableView(frame: view.bounds, style: .grouped))
+
+    private(set) var isViewAppearOnce: Bool = false
 
     private(set) lazy var dataSource: [[RecordType]] = {
         var new = [[RecordType]]()
@@ -70,6 +72,7 @@ final class ConsoleViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
+        isViewAppearOnce = true
         navigationItem.title = "Console"
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: .init(systemName: "xmark"), style: .done, target: self, action: #selector(leftBarButtonItemTapped(_:)))
     }

@@ -16,7 +16,7 @@ extension String {
     ///  - parameter right: The right bookend
     ///
     ///  - returns: The string between the two bookends, or nil if the bookends cannot be found, the bookends are the same or appear contiguously.
-    public func between(_ left: String, _ right: String) -> String? {
+    func between(_ left: String, _ right: String) -> String? {
         guard
             let leftRange = range(of:left),
             let rightRange = range(of: right, options: String.CompareOptions.backwards, range: nil, locale: nil),

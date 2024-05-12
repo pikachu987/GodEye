@@ -9,22 +9,22 @@
 import UIKit
 
 /// FBFile is a class representing a file in FileBrowser
-@objc open class FBFile: NSObject {
+@objc class FBFile: NSObject {
     /// Display name. String.
-    @objc public let displayName: String
+    @objc let displayName: String
     // is Directory. Bool.
-    public let isDirectory: Bool
+    let isDirectory: Bool
     /// File extension.
-    public let fileExtension: String?
+    let fileExtension: String?
     /// File attributes (including size, creation date etc).
-    public let fileAttributes: NSDictionary?
+    let fileAttributes: NSDictionary?
     /// NSURL file path.
-    public let filePath: URL
+    let filePath: URL
     // FBFileType
-    public let type: FBFileType
+    let type: FBFileType
 
     // Size
-    public var size: UInt64 {
+    var size: UInt64 {
         var size: UInt64 = 0
         switch type {
         case .Directory:
@@ -35,7 +35,7 @@ import UIKit
         return size
     }
     
-    open func delete() {
+    func delete() {
         do {
             try FileManager.default.removeItem(at: filePath)
         } catch {
@@ -93,7 +93,7 @@ extension FBFile {
 /**
  FBFile type
  */
-public enum FBFileType: String {
+enum FBFileType: String {
     /// Directory
     case Directory = "directory"
     /// GIF file
@@ -118,7 +118,7 @@ public enum FBFileType: String {
      
      - returns: UIImage for file type
      */
-    public var image: UIImage? {
+    var image: UIImage? {
         let bundle =  Bundle(for: FileParser.self)
         var fileName = String()
         switch self {

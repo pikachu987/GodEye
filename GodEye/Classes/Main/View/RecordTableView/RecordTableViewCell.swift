@@ -48,7 +48,6 @@ final class RecordTableViewCell: UITableViewCell {
             logTextView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)])
 
         logTextView.delegate = self
-//        logTextView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapped(_:))))
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -83,7 +82,6 @@ extension RecordTableViewCell {
 
 extension RecordTableViewCell: UITextViewDelegate {
     func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
-        //Replaced by primaryActionForTextItem: and menuConfigurationForTextItem: for additional customization options
         if URL.absoluteString == "moreTap" {
             delegate?.recordTableViewCellMoreTapped(self)
         } else if URL.absoluteString == "tap" {

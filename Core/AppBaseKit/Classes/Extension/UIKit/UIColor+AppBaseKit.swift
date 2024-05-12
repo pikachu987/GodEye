@@ -45,14 +45,14 @@ extension UIColor {
 
 // MARK: - RGB
 extension UIColor {
-    public convenience init(hex: Int, alpha: CGFloat = 1.0) {
+    convenience init(hex: Int, alpha: CGFloat = 1.0) {
         let red: CGFloat = CGFloat((hex & 0xFF0000) >> 16) / 255.0
         let green: CGFloat = CGFloat((hex & 0x00FF00) >> 8) / 255.0
         let blue: CGFloat = CGFloat((hex & 0x0000FF)) / 255.0
         self.init(red: red, green: green, blue: blue, alpha: alpha)
     }
     
-    public convenience init?(hexString: String, alpha: CGFloat = 1.0) {
+    convenience init?(hexString: String, alpha: CGFloat = 1.0) {
         let formatted = hexString.replacingOccurrences(of: "0x", with: "")
                                  .replacingOccurrences(of:"#", with: "")
         if let hex = Int(formatted, radix: 16) {
@@ -61,7 +61,7 @@ extension UIColor {
         return nil
     }
     
-    public func hexString(prefix: String = "") -> String {
+    func hexString(prefix: String = "") -> String {
         let rgbFloat = rgba()
         
         let result = string(of: rgbFloat.r) + string(of: rgbFloat.g) + string(of: rgbFloat.b)
@@ -81,11 +81,11 @@ extension UIColor {
     }
     
     
-    public func hex() -> Int? {
+    func hex() -> Int? {
         Int(hexString(), radix: 16)
     }
     
-    public func rgba() -> (r: Int, g: Int, b: Int, a: CGFloat) {
+    func rgba() -> (r: Int, g: Int, b: Int, a: CGFloat) {
         var r: CGFloat = 0
         var g: CGFloat = 0
         var b: CGFloat = 0
@@ -102,7 +102,7 @@ extension UIColor {
 // MARK: - Gradient
 extension UIColor {
     
-    public class func gradient(startColor: UIColor, endColor: UIColor, fraction: CGFloat) -> UIColor {
+    class func gradient(startColor: UIColor, endColor: UIColor, fraction: CGFloat) -> UIColor {
         var startR: CGFloat = 0, startG: CGFloat = 0, startB: CGFloat = 0, startA: CGFloat = 0
         startColor.getRed(&startR, green: &startG, blue: &startB, alpha: &startA)
         

@@ -10,15 +10,15 @@ import Foundation
 
 import ObjectiveC
 
-public enum SwizzleResult {
+enum SwizzleResult {
     case Succeed
     case OriginMethodNotFound
     case AlternateMethodNotFound
 }
 
-public extension NSObject {
+extension NSObject {
     
-    public class func swizzleInstanceMethod(origSelector: Selector,
+    static func swizzleInstanceMethod(origSelector: Selector,
                                             toAlterSelector alterSelector: Selector) -> SwizzleResult {
         return swizzleMethod(origSelector: origSelector,
                                   toAlterSelector: alterSelector,
@@ -26,7 +26,7 @@ public extension NSObject {
                                   isClassMethod: false)
     }
     
-    public class func swizzleClassMethod(origSelector: Selector,
+    static func swizzleClassMethod(origSelector: Selector,
                                          toAlterSelector alterSelector: Selector) -> SwizzleResult {
         return swizzleMethod(origSelector: origSelector,
                                   toAlterSelector: alterSelector,
@@ -35,7 +35,7 @@ public extension NSObject {
     }
     
     
-    public class func swizzleInstanceMethod(origSelector: Selector,
+    static func swizzleInstanceMethod(origSelector: Selector,
                                             toAlterSelector alterSelector: Selector,
                                             inAlterClass alterClass: AnyClass) -> SwizzleResult {
         return swizzleMethod(origSelector: origSelector,
@@ -44,7 +44,7 @@ public extension NSObject {
                                   isClassMethod: false)
     }
     
-    public class func swizzleClassMethod(origSelector: Selector,
+    static func swizzleClassMethod(origSelector: Selector,
                                          toAlterSelector alterSelector: Selector,
                                          inAlterClass alterClass: AnyClass) -> SwizzleResult {
         return swizzleMethod(origSelector: origSelector,
@@ -54,7 +54,7 @@ public extension NSObject {
     }
     
     
-    private class func swizzleMethod(origSelector: Selector,
+    private static func swizzleMethod(origSelector: Selector,
                                      toAlterSelector alterSelector: Selector,
                                      inAlterClass alterClass: AnyClass,
                                      isClassMethod:Bool) -> SwizzleResult {
@@ -76,7 +76,7 @@ public extension NSObject {
 
 private func SwizzleMethod(origClass: AnyClass, origSelector: Selector, toAlterSelector alterSelector: Selector, inAlterClass alterClass: AnyClass) -> SwizzleResult {
 
-    guard  let origMethod: Method = class_getInstanceMethod(origClass, origSelector) else {
+    guard let origMethod: Method = class_getInstanceMethod(origClass, origSelector) else {
         return SwizzleResult.OriginMethodNotFound
     }
     
