@@ -12,13 +12,13 @@ extension ConsoleViewController {
     /// open god's eyes
     func openEyes() {
         EyesManager.shared.delegate = self
-        guard let defaultSwitch = GodEye.configuration?.defaultSwitch else { return }
-        if defaultSwitch.asl { EyesManager.shared.openASLEye() }
-        if defaultSwitch.log4g { EyesManager.shared.openLog4GEye() }
-        if defaultSwitch.crash { EyesManager.shared.openCrashEye() }
-        if defaultSwitch.network { EyesManager.shared.openNetworkEye() }
-        if defaultSwitch.anr { EyesManager.shared.openANREye() }
-        if defaultSwitch.leak { EyesManager.shared.openLeakEye() }
+        guard let setting = GodEye.configuration?.setting else { return }
+        if setting.asl { EyesManager.shared.openASLEye() }
+        if setting.log4g { EyesManager.shared.openLog4GEye() }
+        if setting.crash { EyesManager.shared.openCrashEye() }
+        if setting.network { EyesManager.shared.openNetworkEye() }
+        if setting.anr { EyesManager.shared.openANREye() }
+        if setting.leak { EyesManager.shared.openLeakEye() }
     }
     
     func addRecord(model: RecordORMProtocol) {
